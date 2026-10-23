@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <style>:root{color-scheme:light}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
 <title>Frequência ALMG.DIGITAL</title>
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cpath d='M32 57C14 44 4 34 4 21.5 4 12.4 11 6 19.5 6c5.3 0 9.8 2.7 12.5 7 2.7-4.3 7.2-7 12.5-7C53 6 60 12.4 60 21.5 60 34 50 44 32 57z' fill='%238c1c2e'/%3E%3Cpath d='M8 31h13l4-9 6 19 5-14 3 4h17' fill='none' stroke='%23fff' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cpath d='M32 57C14 44 4 34 4 21.5 4 12.4 11 6 19.5 6c5.3 0 9.8 2.7 12.5 7 2.7-4.3 7.2-7 12.5-7C53 6 60 12.4 60 21.5 60 34 50 44 32 57z' fill='%238c1c2e'/%3E%3Cpath d='M8 31h13l4-9 6 19 5-14 3 4h17' fill='none' stroke='%23fff' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
 <meta name="description" content="Controle de frequência e banco de horas para servidores da ALMG: importa as marcações da IntraALMG, calcula o saldo e mostra a hora de saída.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://ponto.almg.digital/">
@@ -41,7 +41,16 @@
 body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.45}
 .wrap{max-width:1080px;margin:0 auto;padding-block:20px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:grid;gap:18px}
 header.top{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px}
-.brand{display:grid;gap:2px}
+.brand{display:grid;gap:14px}
+.brandbar{--dot:#0f8a7e;display:inline-flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink);width:max-content}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .brandbar{--dot:#3fd0bf}}
+:root[data-theme="dark"] .brandbar{--dot:#3fd0bf}
+.brandbar .mark{width:30px;height:30px}
+.wordmark{font-family:var(--f-display);font-weight:800;font-size:17px;letter-spacing:.01em}
+.wordmark i{font-style:normal;color:var(--dot)} .wordmark span{font-weight:600}
+.apptitle{display:flex;align-items:center;gap:14px}
+.apptitle .tile{width:48px;height:48px;flex:none}
+.apptitle .sub{display:block;color:var(--muted);font-size:13.5px;margin-top:2px}
 .brand .eyebrow{font-family:var(--f-mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);font-weight:600}
 .brand h1{font-family:var(--f-display);font-weight:800;font-size:clamp(26px,5vw,36px);line-height:1.05;margin:0;text-wrap:balance}
 .month{display:flex;align-items:center;gap:6px}
@@ -112,6 +121,8 @@ textarea{width:100%;box-sizing:border-box;min-height:130px;font-family:var(--f-m
 .msg.ok{color:var(--good)} .msg.err{color:var(--bad)}
 .legend{display:grid;gap:4px;font-size:13px;color:var(--muted)}
 .legend span.pill{margin-right:6px}
+.backup{display:grid;gap:8px;border-top:1px solid var(--line);padding-top:12px}
+.backup h3{font-family:var(--f-display);font-weight:600;font-size:16px;margin:0}
 footer{color:var(--muted);font-size:12.5px;display:flex;flex-wrap:wrap;gap:6px 16px;justify-content:space-between}
 @media (prefers-reduced-motion:no-preference){tr{transition:background .2s}}
 </style>
@@ -121,8 +132,8 @@ footer{color:var(--muted);font-size:12.5px;display:flex;flex-wrap:wrap;gap:6px 1
 <div class="wrap">
   <header class="top">
     <div class="brand">
-      <span class="eyebrow">ALMG.DIGITAL</span>
-      <h1>Controle de frequência</h1>
+      <a class="brandbar" href="https://almg.digital" aria-label="ALMG.DIGITAL, todas as ferramentas"><svg class="mark" viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="15" fill="var(--ink)"/><rect x="14" y="14" width="14" height="14" rx="3" fill="var(--paper)"/><rect x="36" y="14" width="14" height="14" rx="3" fill="var(--paper)" opacity=".55"/><rect x="14" y="36" width="14" height="14" rx="3" fill="var(--paper)" opacity=".55"/><rect x="36" y="36" width="14" height="14" rx="3" fill="var(--dot)"/></svg><span class="wordmark">ALMG<i>.</i><span>DIGITAL</span></span></a>
+      <div class="apptitle"><svg class="tile" width="48" height="48" viewBox="0 0 64 64" style="--c:#8c1c2e" aria-hidden="true"><rect width="64" height="64" rx="18.7" fill="#8c1c2e"/><path d="M32 54C16 43 8 34 8 23.5 8 15.5 14 10 21 10c4.6 0 8.6 2.3 11 6 2.4-3.7 6.4-6 11-6 7 0 13 5.5 13 13.5C56 34 48 43 32 54z" fill="#fff"/><path d="M12 31h10l3.5-7 5 15 4.5-11 2.5 3H52" fill="none" stroke="var(--c)" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/></svg><div><h1>Controle de frequência</h1><span class="sub">Ponto · feito por servidor, para servidores</span></div></div>
     </div>
     <div class="month">
       <button class="icon" id="prev" aria-label="Mês anterior">‹</button>
@@ -189,11 +200,21 @@ footer{color:var(--muted);font-size:12.5px;display:flex;flex-wrap:wrap;gap:6px 1
         <div>Acima de 7h registradas, desconta 1h de intervalo (ou o intervalo marcado, se for maior). Entre 6h e 7h, conta 6h.</div>
       </div>
       <span class="msg" id="storeMsg"></span>
+      <div class="backup">
+        <h3>Backup</h3>
+        <p>Seus lançamentos ficam só neste navegador. Para levar para outro computador ou celular, ou para não perder nada ao limpar o navegador, salve um backup e restaure no outro aparelho.</p>
+        <div class="row">
+          <button id="doBackup">Salvar backup</button>
+          <button id="doRestore">Restaurar backup</button>
+          <input type="file" id="restoreFile" accept=".json,application/json" hidden>
+          <span class="msg" id="backupMsg" role="status"></span>
+        </div>
+      </div>
     </section>
   </div>
 
   <footer>
-    <span>Ferramenta pessoal, sem vínculo oficial com a ALMG. Confira sempre a <a href="https://intra.almg.gov.br/meus-dados/frequencia-e-jornada-de-trabalho/apuracao-de-frequencia-ef/" target="_blank" rel="noopener">Apuração de Frequência</a>.</span>
+    <span>Iniciativa independente de um servidor da ALMG, sem vínculo oficial com a Assembleia. Confira sempre a <a href="https://intra.almg.gov.br/meus-dados/frequencia-e-jornada-de-trabalho/apuracao-de-frequencia-ef/" target="_blank" rel="noopener">Apuração de Frequência</a>.</span>
     <span>Ramal freq. 7468 · Ramal reg. 7144</span>
   </footer>
 </div>
@@ -472,8 +493,8 @@ footer{color:var(--muted);font-size:12.5px;display:flex;flex-wrap:wrap;gap:6px 1
     for (const { d } of days) {
       if (d > lim) break;
       const e = ent[i % ent.length];
-      if (i === 3) month.dias[d] = { oc: "Feriado" };
-      else if (d === lim && isCur) month.dias[d] = { e };
+      if (calFor(d)) { i++; continue; }
+      if (d === lim && isCur) month.dias[d] = { e };
       else month.dias[d] = { e, s: e + (i % 3 === 0 ? 540 : 660) + (i % 4) * 7 };
       i++;
     }
@@ -504,6 +525,57 @@ footer{color:var(--muted);font-size:12.5px;display:flex;flex-wrap:wrap;gap:6px 1
   for (const [id, key] of [["fJornada","jornada"],["fMax","max"],["fMin","min"]]) {
     $(id).addEventListener("change", e => { const v = parseT(e.target.value); if (v > 0) { cfg[key] = v; render(); if (!example) queueSave(); } else render(); });
   }
+
+  // ---------- backup ----------
+  async function collectAll(){
+    flush(); await saving;
+    const out = { app: "ponto.almg.digital", versao: 1, gerado: new Date().toISOString(), config: { ...cfg }, meses: {} };
+    if (mode === "db") {
+      try { const q = await db.collection("data/users/" + uid).get(); for (const d of q.docs) if (/^\d{4}-\d{2}$/.test(d.id)) out.meses[d.id] = d.data(); } catch {}
+    } else {
+      try { for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); const m = k && k.match(/^almg-freq:(\d{4}-\d{2})$/); if (m) out.meses[m[1]] = JSON.parse(localStorage.getItem(k)); } } catch {}
+    }
+    if (!example) out.meses[ym()] = JSON.parse(JSON.stringify(month));
+    return out;
+  }
+  function backupMsg(t, cls){ const m = $("backupMsg"); m.textContent = t; m.className = "msg " + (cls || ""); }
+  $("doBackup").addEventListener("click", async () => {
+    const data = await collectAll();
+    const n = Object.keys(data.meses).length;
+    if (!n) { backupMsg("Ainda não há lançamentos para salvar.", "err"); return; }
+    const json = JSON.stringify(data, null, 1);
+    const name = "ponto-backup-" + new Date().toISOString().slice(0, 10) + ".json";
+    let ok = false;
+    try { const dl = await window.claude?.use?.("downloads"); if (dl) { await dl.save({ filename: name, data: json }); ok = true; } } catch {}
+    if (!ok) {
+      try {
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(new Blob([json], { type: "application/json" }));
+        a.download = name; document.body.appendChild(a); a.click(); a.remove();
+        setTimeout(() => URL.revokeObjectURL(a.href), 2000); ok = true;
+      } catch {}
+    }
+    backupMsg(ok ? "Backup salvo: " + n + (n === 1 ? " mês" : " meses") + " (" + name + ")." : "Não foi possível baixar o arquivo neste navegador.", ok ? "ok" : "err");
+  });
+  $("doRestore").addEventListener("click", () => $("restoreFile").click());
+  $("restoreFile").addEventListener("change", async e => {
+    const f = e.target.files && e.target.files[0]; e.target.value = "";
+    if (!f) return;
+    let data;
+    try { data = JSON.parse(await f.text()); } catch { backupMsg("Esse arquivo não é um backup válido.", "err"); return; }
+    if (!data || data.app !== "ponto.almg.digital" || typeof data.meses !== "object") { backupMsg("Esse arquivo não é um backup do ponto.almg.digital.", "err"); return; }
+    const keys = Object.keys(data.meses).filter(k => /^\d{4}-\d{2}$/.test(k));
+    if (data.config) cfg = { ...cfg, ...data.config };
+    for (const k of keys) {
+      const body = data.meses[k];
+      if (mode === "db") { try { await db.doc("data/users/" + uid + "/" + k).set(body); } catch { lsSet(k, body); } }
+      else lsSet(k, body);
+    }
+    if (mode === "db") { try { await db.doc("data/users/" + uid + "/config").set({ ...cfg }); } catch { lsSet("config", cfg); } } else lsSet("config", cfg);
+    savedFlag = true;
+    await loadMonth();
+    backupMsg("Backup restaurado: " + keys.length + (keys.length === 1 ? " mês" : " meses") + ".", "ok");
+  });
 
   // ---------- início ----------
   month = { dias: {}, anterior: null }; loadExample(); render();
