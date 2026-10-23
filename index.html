@@ -1,0 +1,513 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>:root{color-scheme:light}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Frequência ALMG.DIGITAL</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+/* Layout: cartão de ponto — faixa de resumo no topo, grade de dias como a ficha do relógio, painéis de apoio embaixo */
+:root{
+  --bg:#f3f2f4; --paper:#ffffff; --ink:#1d1a20; --muted:#6c6672; --line:#dcd8df; --soft:#f7f5f8;
+  --accent:#8c1c2e; --accent-ink:#ffffff; --accent-soft:#f5e3e6;
+  --good:#1e7a4c; --good-soft:#e2f3ea; --warn:#9a6200; --warn-soft:#fbf0d9; --bad:#b3261e; --bad-soft:#fbe4e2;
+  --f-display:"Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --f-body:"IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --f-mono:"IBM Plex Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#141216; --paper:#1d1a20; --ink:#efecf1; --muted:#a39caa; --line:#36313b; --soft:#242028;
+  --accent:#e0566c; --accent-ink:#1a0a0e; --accent-soft:#3a1d24;
+  --good:#5fcf95; --good-soft:#173527; --warn:#f0b54a; --warn-soft:#3a2c10; --bad:#ff8a80; --bad-soft:#3d1b19; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#141216; --paper:#1d1a20; --ink:#efecf1; --muted:#a39caa; --line:#36313b; --soft:#242028;
+  --accent:#e0566c; --accent-ink:#1a0a0e; --accent-soft:#3a1d24;
+  --good:#5fcf95; --good-soft:#173527; --warn:#f0b54a; --warn-soft:#3a2c10; --bad:#ff8a80; --bad-soft:#3d1b19; color-scheme:dark}
+
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.45}
+.wrap{max-width:1080px;margin:0 auto;padding-block:20px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:grid;gap:18px}
+header.top{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px}
+.brand{display:grid;gap:2px}
+.brand .eyebrow{font-family:var(--f-mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);font-weight:600}
+.brand h1{font-family:var(--f-display);font-weight:800;font-size:clamp(26px,5vw,36px);line-height:1.05;margin:0;text-wrap:balance}
+.month{display:flex;align-items:center;gap:6px}
+.month output{font-family:var(--f-display);font-weight:600;font-size:18px;min-width:9.5em;text-align:center;text-transform:capitalize}
+button{font:inherit;cursor:pointer;border-radius:8px;border:1px solid var(--line);background:var(--paper);color:var(--ink);padding:7px 12px}
+button:hover{border-color:var(--accent)}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+button.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:600}
+button.icon{width:38px;height:38px;padding:0;font-size:18px;line-height:1}
+
+/* resumo */
+.summary{display:grid;grid-template-columns:1.3fr repeat(4,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.stat{background:var(--paper);padding:14px 16px;display:grid;gap:4px;align-content:start;min-width:0}
+.stat .k{font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.stat .v{font-family:var(--f-mono);font-weight:600;font-size:22px;font-variant-numeric:tabular-nums}
+.stat .s{font-size:12.5px;color:var(--muted)}
+.stat.hero{background:var(--accent-soft)}
+.stat.hero .v{font-family:var(--f-display);font-weight:800;font-size:40px;line-height:1}
+.pos{color:var(--good)} .neg{color:var(--bad)}
+@media (max-width:820px){.summary{grid-template-columns:1fr 1fr}.stat.hero{grid-column:1/-1}}
+
+.notice{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;justify-content:space-between;border-radius:12px;padding:12px 16px;background:var(--warn-soft);color:var(--ink);border:1px solid var(--line)}
+.notice b{color:var(--warn)}
+.notice .actions{display:flex;gap:8px;flex-wrap:wrap}
+.today{display:flex;flex-wrap:wrap;gap:6px 20px;align-items:baseline;border-left:4px solid var(--accent);background:var(--paper);border-radius:10px;padding:12px 16px;border-top:1px solid var(--line);border-right:1px solid var(--line);border-bottom:1px solid var(--line)}
+.today .big{font-family:var(--f-mono);font-size:24px;font-weight:600;color:var(--accent)}
+.today .muted{color:var(--muted);font-size:13.5px}
+
+/* grade */
+.card{background:var(--paper);border:1px solid var(--line);border-radius:14px}
+.tablebox{overflow-x:auto}
+table{border-collapse:collapse;width:100%;min-width:860px;font-variant-numeric:tabular-nums}
+th{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600;text-align:left;padding:10px 8px;border-bottom:1px solid var(--line);white-space:nowrap;position:sticky;top:0;background:var(--paper)}
+th.grp{color:var(--accent)}
+td{padding:4px 8px;border-bottom:1px solid var(--line);white-space:nowrap}
+tr:last-child td{border-bottom:0}
+td.day{font-family:var(--f-mono);font-weight:600;width:2.2em}
+td.wd{color:var(--muted);font-size:13px;width:4.5em}
+td.wd .hol{display:block;font-size:11px;color:var(--accent);font-weight:600;white-space:normal;max-width:11em;line-height:1.2}
+td.num{font-family:var(--f-mono);text-align:right}
+td.code{font-family:var(--f-mono);text-align:center}
+tr.is-today td{background:var(--accent-soft)}
+tr.is-today td.day{color:var(--accent)}
+tr.off td.wd,tr.off td.day{color:var(--muted)}
+input.t{font-family:var(--f-mono);font-size:14px;width:5.2em;padding:5px 6px;border:1px solid var(--line);border-radius:6px;background:var(--soft);color:var(--ink);text-align:center}
+input.t:read-only{background:transparent;border-color:transparent}
+input.t.bad{border-color:var(--bad);background:var(--bad-soft)}
+select.oc{font:inherit;font-size:13.5px;padding:5px 6px;border:1px solid var(--line);border-radius:6px;background:var(--soft);color:var(--ink)}
+select.oc:disabled{background:transparent;border-color:transparent;appearance:none;color:var(--ink)}
+.pill{display:inline-block;font-family:var(--f-mono);font-size:12px;font-weight:600;padding:2px 7px;border-radius:999px}
+.pill.c78{background:var(--warn-soft);color:var(--warn)}
+.pill.cx{background:var(--soft);color:var(--muted)}
+.pill.cok{background:var(--good-soft);color:var(--good)}
+td.saldo.pos{color:var(--good)} td.saldo.neg{color:var(--bad)}
+
+/* painéis */
+.panels{display:grid;grid-template-columns:1.4fr 1fr;gap:18px}
+@media (max-width:820px){.panels{grid-template-columns:1fr}}
+.panel{padding:16px 18px;display:grid;gap:12px;align-content:start;min-width:0}
+.panel h2{font-family:var(--f-display);font-weight:600;font-size:19px;margin:0}
+.panel p{margin:0;color:var(--muted);font-size:14px;max-width:62ch}
+textarea{width:100%;box-sizing:border-box;min-height:130px;font-family:var(--f-mono);font-size:13px;padding:10px;border:1px solid var(--line);border-radius:8px;background:var(--soft);color:var(--ink);resize:vertical}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.fields{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px}
+.fields label{display:grid;gap:4px;font-size:12.5px;color:var(--muted);font-weight:500}
+.fields input{font-family:var(--f-mono);font-size:14px;padding:7px 8px;border:1px solid var(--line);border-radius:6px;background:var(--soft);color:var(--ink);width:100%;box-sizing:border-box}
+.msg{font-size:13.5px}
+.msg.ok{color:var(--good)} .msg.err{color:var(--bad)}
+.legend{display:grid;gap:4px;font-size:13px;color:var(--muted)}
+.legend span.pill{margin-right:6px}
+footer{color:var(--muted);font-size:12.5px;display:flex;flex-wrap:wrap;gap:6px 16px;justify-content:space-between}
+@media (prefers-reduced-motion:no-preference){tr{transition:background .2s}}
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <span class="eyebrow">ALMG.DIGITAL</span>
+      <h1>Controle de frequência</h1>
+    </div>
+    <div class="month">
+      <button class="icon" id="prev" aria-label="Mês anterior">‹</button>
+      <output id="monthLabel"></output>
+      <button class="icon" id="next" aria-label="Próximo mês">›</button>
+    </div>
+  </header>
+
+  <div class="notice" id="exampleNotice" hidden>
+    <div><b>Exemplo.</b> Estes horários são fictícios, só para mostrar como funciona. Cole as suas marcações da IntraALMG para começar.</div>
+    <div class="actions">
+      <button class="primary" id="goImport">Colar minhas marcações</button>
+      <button id="startBlank">Começar em branco</button>
+    </div>
+  </div>
+
+  <section class="summary" aria-label="Resumo do mês">
+    <div class="stat hero"><span class="k">Banco atual</span><span class="v" id="sBanco">—</span><span class="s" id="sBancoSub"></span></div>
+    <div class="stat"><span class="k">Saldo do mês</span><span class="v" id="sMes">—</span><span class="s" id="sMesSub"></span></div>
+    <div class="stat"><span class="k">Fim do mês</span><span class="v" id="sFim">—</span><span class="s" id="sFimSub"></span></div>
+    <div class="stat"><span class="k">Para zerar</span><span class="v" id="sZerar">—</span><span class="s">fazendo 10h por dia</span></div>
+    <div class="stat"><span class="k">Apurado</span><span class="v" id="sApur">—</span><span class="s" id="sApurSub"></span></div>
+  </section>
+
+  <div class="today" id="todayBox" hidden></div>
+
+  <section class="card tablebox" aria-label="Dias úteis do mês">
+    <table>
+      <thead>
+        <tr>
+          <th colspan="2">Dia</th>
+          <th class="grp">Entrada</th><th class="grp">Saída int.</th><th class="grp">Volta int.</th><th class="grp">Saída</th>
+          <th>Ocorrência</th><th style="text-align:center">Cód.</th>
+          <th style="text-align:right">Registrada</th><th style="text-align:right">Intervalo</th><th style="text-align:right">Apurada</th><th style="text-align:right">Saldo</th>
+        </tr>
+      </thead>
+      <tbody id="rows"></tbody>
+    </table>
+  </section>
+
+  <div class="panels">
+    <section class="card panel" id="importPanel">
+      <h2>Importar da IntraALMG</h2>
+      <p>Abra <a href="https://intra.almg.gov.br/meus-dados/frequencia-e-jornada-de-trabalho/marcacoes-de-ponto/index.html" target="_blank" rel="noopener">Marcações de Ponto</a>, selecione a tabela do mês (do “DIA” até a última linha), copie e cole aqui. Os horários do mês em exibição são preenchidos; as ocorrências que você marcou ficam como estão.</p>
+      <textarea id="paste" placeholder="06	ter	10:10 21:21&#10;07	qua	10:51 21:52&#10;…"></textarea>
+      <div class="row">
+        <button class="primary" id="doImport">Preencher o mês</button>
+        <span class="msg" id="importMsg" role="status"></span>
+      </div>
+    </section>
+
+    <section class="card panel">
+      <h2>Ajustes</h2>
+      <div class="fields">
+        <label for="fAnterior">Saldo anterior (extrato)<input id="fAnterior" inputmode="text" placeholder="-36:21"></label>
+        <label for="fJornada">Jornada diária<input id="fJornada" placeholder="8:00"></label>
+        <label for="fMax">Máximo apurado/dia<input id="fMax" placeholder="10:00"></label>
+        <label for="fMin">Mínimo/dia<input id="fMin" placeholder="6:00"></label>
+      </div>
+      <div class="legend">
+        <div><span class="pill c78">78</span>entrada antes de 7:30 ou saída depois de 19:00</div>
+        <div><span class="pill cx">63 · 70 · 71 · 51</span>Jornada · Férias · Eleitoral · Folga</div>
+        <div id="calNote"></div>
+        <div>Acima de 7h registradas, desconta 1h de intervalo (ou o intervalo marcado, se for maior). Entre 6h e 7h, conta 6h.</div>
+      </div>
+      <span class="msg" id="storeMsg"></span>
+    </section>
+  </div>
+
+  <footer>
+    <span>Ferramenta pessoal, sem vínculo oficial com a ALMG. Confira sempre a <a href="https://intra.almg.gov.br/meus-dados/frequencia-e-jornada-de-trabalho/apuracao-de-frequencia-ef/" target="_blank" rel="noopener">Apuração de Frequência</a>.</span>
+    <span>Ramal freq. 7468 · Ramal reg. 7144</span>
+  </footer>
+</div>
+
+<script>
+(() => {
+  const OCS = ["", "Convocação", "Jornada", "Férias", "Folga", "Licença", "Eleitoral", "Feriado", "Recesso"];
+  // Calendário oficial da ALMG — Portaria Psec/DGE nº 67/2025 (dias úteis apenas). Mês 1–12.
+  const CAL = {
+    2026: {
+      1: { 1: ["Feriado", "Confraternização Universal"], 2: ["Recesso", "Recesso"] },
+      2: { 16: ["Recesso", "Recesso"], 17: ["Feriado", "Carnaval"], 18: ["Recesso", "Recesso (Cinzas)"] },
+      4: { 2: ["Recesso", "Recesso"], 3: ["Feriado", "Paixão de Cristo"], 20: ["Recesso", "Recesso"], 21: ["Feriado", "Tiradentes"] },
+      5: { 1: ["Feriado", "Dia do Trabalho"] },
+      6: { 4: ["Feriado", "Corpus Christi"], 5: ["Recesso", "Recesso"] },
+      9: { 7: ["Feriado", "Independência do Brasil"] },
+      10: { 12: ["Feriado", "Nossa Senhora Aparecida"], 30: ["Feriado", "Dia do Servidor Público"] },
+      11: { 2: ["Feriado", "Finados"], 20: ["Feriado", "Zumbi e Consciência Negra"] },
+      12: { 7: ["Recesso", "Recesso"], 8: ["Feriado", "N. Sra. da Conceição"], 24: ["Recesso", "Recesso"], 25: ["Feriado", "Natal"], 31: ["Recesso", "Recesso"] }
+    }
+  };
+  const calFor = d => (CAL[view.y] && CAL[view.y][view.m + 1] && CAL[view.y][view.m + 1][d]) || null;
+  const hasCal = () => !!CAL[view.y];
+  const WD = ["dom","seg","ter","qua","qui","sex","sáb"];
+  const MONTHS = ["janeiro","fevereiro","março","abril","maio","junho","julho","agosto","setembro","outubro","novembro","dezembro"];
+  const $ = id => document.getElementById(id);
+
+  // ---------- tempo ----------
+  function parseT(str){
+    if (str == null) return null;
+    let s = String(str).trim(); if (!s) return null;
+    let neg = false; if (/^[-−]/.test(s)) { neg = true; s = s.slice(1).trim(); } else if (s[0] === "+") s = s.slice(1);
+    let h, m;
+    if (/^\d{1,3}:\d{1,2}$/.test(s)) { [h, m] = s.split(":").map(Number); }
+    else if (/^\d{3,4}$/.test(s)) { h = Number(s.slice(0, -2)); m = Number(s.slice(-2)); }
+    else if (/^\d{1,2}$/.test(s)) { h = Number(s); m = 0; }
+    else return NaN;
+    if (m > 59) return NaN;
+    const v = h * 60 + m; return neg ? -v : v;
+  }
+  const isClock = v => v != null && !Number.isNaN(v) && v >= 0 && v < 24 * 60;
+  function fmt(min, signed){
+    if (min == null || Number.isNaN(min)) return "";
+    const sg = min < 0 ? "-" : (signed && min > 0 ? "+" : "");
+    const a = Math.abs(Math.round(min));
+    return sg + Math.floor(a / 60) + ":" + String(a % 60).padStart(2, "0");
+  }
+  const clock = min => min == null ? "" : String(Math.floor(min / 60) % 24).padStart(2, "0") + ":" + String(min % 60).padStart(2, "0");
+
+  // ---------- estado ----------
+  const now = new Date();
+  let view = { y: now.getFullYear(), m: now.getMonth() };
+  let cfg = { jornada: 480, max: 600, min: 360, limiar: 420 };
+  let month = null;          // { dias: {d:{e,ii,if,s,oc}}, anterior }
+  let example = false;
+  const ym = () => view.y + "-" + String(view.m + 1).padStart(2, "0");
+
+  function businessDays(y, m){
+    const out = []; const d = new Date(y, m, 1);
+    while (d.getMonth() === m) { const w = d.getDay(); if (w > 0 && w < 6) out.push({ d: d.getDate(), w }); d.setDate(d.getDate() + 1); }
+    return out;
+  }
+
+  // ---------- cálculo (mesma lógica da aba FREQUÊNCIA) ----------
+  function calcDay(r){
+    const e = r.e ?? null, ii = r.ii ?? null, fi = r.if ?? null, s = r.s ?? null, oc = r.oc || "";
+    const end = s != null ? s : ii;
+    let code = "";
+    if (oc === "Folga") code = "51";
+    else if (e != null) {
+      if (oc === "Jornada") code = "63"; else if (oc === "Férias") code = "70"; else if (oc === "Eleitoral") code = "71";
+      else if (oc === "Licença" || oc === "Convocação") code = "-";
+      else if (e < 450 || (end != null && end > 1140)) code = "78";
+    }
+    const reg = (e != null && end != null) ? end - e : null;
+    let int = null, apur = null;
+    if (reg != null) {
+      const base = reg > cfg.limiar ? 60 : 0;
+      int = (ii != null && fi != null && s != null) ? Math.max(fi - ii, base) : base;
+      if (oc !== "Licença") apur = reg < cfg.min ? 0 : (reg <= cfg.limiar ? cfg.min : Math.min(reg - int, cfg.max));
+    }
+    return { code, reg, int, apur };
+  }
+
+  function compute(){
+    const days = businessDays(view.y, view.m);
+    const isCur = view.y === now.getFullYear() && view.m === now.getMonth();
+    const isPast = new Date(view.y, view.m + 1, 1) <= new Date(now.getFullYear(), now.getMonth(), 1);
+    let soma = 0, dias = 0, folgas = 0, rest = 0, running = 0;
+    const rows = days.map(({ d, w }) => {
+      const r0 = month.dias[d] || {};
+      const hol = calFor(d);
+      const r = { ...r0, oc: r0.oc !== undefined ? r0.oc : (hol ? hol[0] : "") };
+      const c = calcDay(r);
+      const oc = r.oc || "";
+      if (c.apur != null) soma += c.apur;
+      if (c.apur != null && oc !== "Férias" && oc !== "Folga") dias++;
+      if (oc === "Folga") folgas++;
+      const future = isCur ? d >= now.getDate() : !isPast;
+      if (r.e == null && !oc && future) rest++;
+      let saldo = null;
+      if (oc === "Folga") running -= cfg.jornada, saldo = running;
+      else if (c.apur != null) { running += c.apur - (oc === "Férias" ? 0 : cfg.jornada); saldo = running; }
+      return { d, w, r, c, hol, saldo, today: isCur && d === now.getDate() };
+    });
+    const extra = cfg.max - cfg.jornada;
+    const saldoMes = soma - (dias + folgas) * cfg.jornada;
+    const anterior = month.anterior ?? 0;
+    const banco = anterior + saldoMes;
+    const fim = banco + rest * extra;
+    const zerar = banco >= 0 ? "Zerado" : (extra > 0 ? Math.ceil(-banco / extra) + (Math.ceil(-banco / extra) === 1 ? " dia" : " dias") : "—");
+    return { rows, soma, dias, folgas, rest, saldoMes, anterior, banco, fim, zerar, previsto: soma + rest * cfg.max };
+  }
+
+  // ---------- render ----------
+  function signClass(el, v){ el.classList.toggle("pos", v > 0); el.classList.toggle("neg", v < 0); }
+  function render(){
+    $("monthLabel").textContent = MONTHS[view.m] + " " + view.y;
+    $("calNote").textContent = hasCal() ? "Feriados e recessos de " + view.y + " já vêm marcados pelo calendário oficial da ALMG (Portaria 67/2025). Dá para trocar a ocorrência de qualquer dia." : "O calendário oficial de " + view.y + " ainda não está no site. Marque feriados e recessos à mão.";
+    $("exampleNotice").hidden = !example;
+    const k = compute();
+    const tb = $("rows"); tb.textContent = "";
+    for (const row of k.rows) {
+      const tr = document.createElement("tr");
+      if (row.today) tr.className = "is-today";
+      if (["Férias","Feriado","Recesso","Licença","Folga"].includes(row.r.oc)) tr.classList.add("off");
+      const td = (cls, txt) => { const x = document.createElement("td"); if (cls) x.className = cls; if (txt != null) x.textContent = txt; tr.appendChild(x); return x; };
+      td("day", String(row.d).padStart(2, "0"));
+      const wdc = td("wd", WD[row.w]);
+      if (row.hol) { const h = document.createElement("span"); h.className = "hol"; h.textContent = row.hol[1]; wdc.appendChild(h); }
+      for (const f of ["e","ii","if","s"]) {
+        const cell = td("");
+        const inp = document.createElement("input");
+        inp.className = "t"; inp.id = "t-" + row.d + "-" + f; inp.inputMode = "numeric"; inp.autocomplete = "off";
+        inp.value = clock(row.r[f] ?? null); inp.readOnly = example;
+        inp.setAttribute("aria-label", { e:"Entrada", ii:"Saída para intervalo", if:"Volta do intervalo", s:"Saída" }[f] + " dia " + row.d);
+        inp.addEventListener("change", () => setTime(row.d, f, inp));
+        cell.appendChild(inp);
+      }
+      const ocCell = td("");
+      const sel = document.createElement("select");
+      sel.className = "oc"; sel.id = "oc-" + row.d; sel.disabled = example;
+      sel.setAttribute("aria-label", "Ocorrência dia " + row.d);
+      for (const o of OCS) { const op = document.createElement("option"); op.value = o; op.textContent = o || "—"; sel.appendChild(op); }
+      sel.value = row.r.oc || "";
+      sel.addEventListener("change", () => { setField(row.d, "oc", sel.value || (row.hol ? "" : undefined)); });
+      ocCell.appendChild(sel);
+      const codeCell = td("code");
+      if (row.c.code) { const p = document.createElement("span"); p.className = "pill " + (row.c.code === "78" ? "c78" : row.c.code === "-" ? "cok" : "cx"); p.textContent = row.c.code; codeCell.appendChild(p); }
+      td("num", fmt(row.c.reg));
+      td("num", fmt(row.c.int));
+      td("num", fmt(row.c.apur));
+      const sc = td("num saldo", fmt(row.saldo, true)); signClass(sc, row.saldo ?? 0);
+      tb.appendChild(tr);
+    }
+    $("sBanco").textContent = fmt(k.banco, true) || "0:00"; signClass($("sBanco"), k.banco);
+    $("sBancoSub").textContent = "saldo anterior " + (fmt(k.anterior, true) || "0:00") + " + mês";
+    $("sMes").textContent = fmt(k.saldoMes, true) || "0:00"; signClass($("sMes"), k.saldoMes);
+    $("sMesSub").textContent = k.dias + (k.dias === 1 ? " dia apurado" : " dias apurados") + (k.folgas ? " · " + k.folgas + " folga" + (k.folgas > 1 ? "s" : "") : "");
+    $("sFim").textContent = fmt(k.fim, true) || "0:00"; signClass($("sFim"), k.fim);
+    $("sFimSub").textContent = k.rest + (k.rest === 1 ? " dia restante" : " dias restantes") + " a 10h";
+    $("sZerar").textContent = k.zerar;
+    $("sApur").textContent = fmt(k.soma);
+    $("sApurSub").textContent = "jornada do mês " + fmt((k.dias + k.folgas) * cfg.jornada);
+    renderToday(k);
+    if (document.activeElement !== $("fAnterior")) $("fAnterior").value = month.anterior != null ? fmt(month.anterior, true) : "";
+    $("fJornada").value = fmt(cfg.jornada); $("fMax").value = fmt(cfg.max); $("fMin").value = fmt(cfg.min);
+  }
+
+  function renderToday(k){
+    const box = $("todayBox"); const t = k.rows.find(r => r.today);
+    if (!t || t.r.e == null || t.r.s != null) { box.hidden = true; return; }
+    const e = t.r.e;
+    const sMax = e + cfg.max + 60, sJor = e + cfg.jornada + 60, sMin = e + cfg.min;
+    box.textContent = "";
+    const add = (cls, txt) => { const s = document.createElement("span"); s.className = cls; s.textContent = txt; box.appendChild(s); };
+    add("muted", "Hoje você entrou às " + clock(e) + ". Para fechar 10h líquidas, saia às");
+    add("big", clock(sMax));
+    add("muted", "8h líquidas às " + clock(sJor) + " · mínimo de 6h às " + clock(sMin) + (sMax > 1140 ? " · depois das 19:00 gera o código 78" : ""));
+    box.hidden = false;
+  }
+
+  // ---------- edição ----------
+  function setTime(d, f, inp){
+    const v = parseT(inp.value);
+    if (inp.value.trim() && !isClock(v)) { inp.classList.add("bad"); return; }
+    inp.classList.remove("bad");
+    setField(d, f, v == null ? undefined : v);
+  }
+  function setField(d, f, v){
+    if (example) return;
+    const r = { ...(month.dias[d] || {}) };
+    if (v === undefined) delete r[f]; else r[f] = v;
+    if (Object.keys(r).length) month.dias[d] = r; else delete month.dias[d];
+    render(); queueSave();
+  }
+
+  // ---------- importação ----------
+  function importText(txt){
+    const valid = new Set(businessDays(view.y, view.m).map(x => x.d).concat(Array.from({length:31},(_, i)=>i+1)));
+    let n = 0;
+    for (const line of txt.split(/\r?\n/)) {
+      const md = line.match(/^\s*(\d{1,2})\b/); if (!md) continue;
+      const d = Number(md[1]); if (!valid.has(d) || d < 1 || d > 31) continue;
+      const times = (line.match(/\b\d{1,2}:\d{2}\b/g) || []).map(parseT).filter(isClock);
+      if (!times.length) continue;
+      const r = { ...(month.dias[d] || {}) };
+      delete r.e; delete r.ii; delete r.if; delete r.s;
+      r.e = times[0];
+      if (times.length === 2) r.s = times[1];
+      else if (times.length === 3) { r.ii = times[1]; r.if = times[2]; }
+      else if (times.length >= 4) { r.ii = times[1]; r.if = times[2]; r.s = times[times.length - 1]; }
+      month.dias[d] = r; n++;
+    }
+    return n;
+  }
+
+  // ---------- armazenamento ----------
+  let db = null, uid = null, mode = "local";
+  const LS = k => "almg-freq:" + k;
+  const lsGet = k => { try { const v = localStorage.getItem(LS(k)); return v ? JSON.parse(v) : null; } catch { return null; } };
+  const lsSet = (k, v) => { try { localStorage.setItem(LS(k), JSON.stringify(v)); return true; } catch { return false; } };
+
+  async function loadMonth(){
+    let data = null;
+    if (mode === "db") {
+      try { const s = await db.doc("data/users/" + uid + "/" + ym()).get(); data = s.exists ? s.data() : null; } catch { data = null; }
+    } else data = lsGet(ym());
+    month = { dias: {}, anterior: null, ...(data ? JSON.parse(JSON.stringify(data)) : {}) };
+    if (!month.dias) month.dias = {};
+    example = false;
+    if (!data && !(await anySaved())) loadExample();
+    render();
+  }
+  let savedFlag = null;
+  async function anySaved(){
+    if (savedFlag != null) return savedFlag;
+    if (mode === "db") { try { const s = await db.doc("data/users/" + uid + "/config").get(); savedFlag = s.exists; } catch { savedFlag = false; } }
+    else savedFlag = !!lsGet("config");
+    return savedFlag;
+  }
+  async function loadCfg(){
+    let c = null;
+    if (mode === "db") { try { const s = await db.doc("data/users/" + uid + "/config").get(); c = s.exists ? s.data() : null; } catch {} }
+    else c = lsGet("config");
+    if (c) cfg = { ...cfg, ...c };
+  }
+
+  let saveTimer = null, saving = Promise.resolve();
+  function queueSave(){ clearTimeout(saveTimer); saveTimer = setTimeout(save, 700); }
+  function save(){
+    if (example) return;
+    const key = ym(), body = JSON.parse(JSON.stringify(month)), c = { ...cfg };
+    savedFlag = true;
+    saving = saving.then(async () => {
+      if (mode === "db") {
+        try { await db.doc("data/users/" + uid + "/" + key).set(body); await db.doc("data/users/" + uid + "/config").set(c); storeMsg("Salvo na sua conta", "ok"); }
+        catch (e) { mode = "local"; lsSet(key, body); lsSet("config", c); storeMsg("Não deu para salvar na conta; salvo neste navegador", "err"); }
+      } else {
+        const ok = lsSet(key, body) && lsSet("config", c);
+        storeMsg(ok ? "Salvo neste navegador" : "Este navegador não permite salvar; os dados somem ao fechar", ok ? "ok" : "err");
+      }
+    });
+  }
+  function storeMsg(t, cls){ const m = $("storeMsg"); m.textContent = t; m.className = "msg " + (cls || ""); }
+
+  // ---------- exemplo ----------
+  function loadExample(){
+    example = true;
+    const days = businessDays(view.y, view.m);
+    const isCur = view.y === now.getFullYear() && view.m === now.getMonth();
+    const lim = isCur ? now.getDate() : 32;
+    const ent = [552, 571, 540, 600, 563, 548, 595, 577, 545, 560, 586, 553, 570, 541, 598];
+    let i = 0;
+    month = { dias: {}, anterior: -(9 * 60 + 40) };
+    for (const { d } of days) {
+      if (d > lim) break;
+      const e = ent[i % ent.length];
+      if (i === 3) month.dias[d] = { oc: "Feriado" };
+      else if (d === lim && isCur) month.dias[d] = { e };
+      else month.dias[d] = { e, s: e + (i % 3 === 0 ? 540 : 660) + (i % 4) * 7 };
+      i++;
+    }
+  }
+
+  // ---------- eventos ----------
+  $("prev").addEventListener("click", () => { flush(); view.m--; if (view.m < 0) { view.m = 11; view.y--; } loadMonth(); });
+  $("next").addEventListener("click", () => { flush(); view.m++; if (view.m > 11) { view.m = 0; view.y++; } loadMonth(); });
+  function flush(){ if (saveTimer) { clearTimeout(saveTimer); saveTimer = null; save(); } }
+  $("goImport").addEventListener("click", () => { $("paste").focus(); $("importPanel").scrollIntoView({ behavior: "smooth", block: "center" }); });
+  $("startBlank").addEventListener("click", () => { example = false; month = { dias: {}, anterior: null }; render(); save(); });
+  $("doImport").addEventListener("click", () => {
+    const txt = $("paste").value;
+    if (example) { example = false; month = { dias: {}, anterior: null }; }
+    const n = importText(txt);
+    const msg = $("importMsg");
+    if (!n) { msg.textContent = "Não encontrei linhas no formato “dia … horários”. Copie a tabela inteira da página Marcações de Ponto."; msg.className = "msg err"; render(); return; }
+    msg.textContent = n + (n === 1 ? " dia preenchido" : " dias preenchidos") + " em " + MONTHS[view.m] + "."; msg.className = "msg ok";
+    $("paste").value = ""; render(); save();
+  });
+  $("fAnterior").addEventListener("change", e => {
+    const v = parseT(e.target.value);
+    if (e.target.value.trim() && (v == null || Number.isNaN(v))) { e.target.classList.add("bad"); return; }
+    e.target.classList.remove("bad");
+    if (example) { example = false; month = { dias: {}, anterior: null }; }
+    month.anterior = v; render(); queueSave();
+  });
+  for (const [id, key] of [["fJornada","jornada"],["fMax","max"],["fMin","min"]]) {
+    $(id).addEventListener("change", e => { const v = parseT(e.target.value); if (v > 0) { cfg[key] = v; render(); if (!example) queueSave(); } else render(); });
+  }
+
+  // ---------- início ----------
+  month = { dias: {}, anterior: null }; loadExample(); render();
+  
+  (async () => {
+    try {
+      const [d, u] = await Promise.all([window.claude?.use?.("db"), window.claude?.use?.("user")]);
+      const id = u ? await u.id() : null;
+      if (d && id) { db = d; uid = id; mode = "db"; }
+    } catch {}
+    await loadCfg();
+    await loadMonth();
+    storeMsg(mode === "db" ? "Seus dados ficam salvos na sua conta, visíveis só para você" : "Seus dados ficam salvos neste navegador");
+  })();
+})();
+</script>
+
+</body>
+</html>
