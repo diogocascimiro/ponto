@@ -203,7 +203,7 @@ footer{color:var(--muted);font-size:12.5px;display:flex;flex-wrap:wrap;gap:6px 1
         <li><b>Escolha sua jornada.</b>
           <label for="gJornada" class="gl">Jornada diária
             <select id="gJornada"><option value="480">8h (40h semanais)</option><option value="420">7h (35h semanais)</option><option value="360">6h (30h semanais)</option></select></label></li>
-        <li><b>Abra a <a href="https://intra.almg.gov.br/meus-dados/frequencia-e-jornada-de-trabalho/apuracao-de-frequencia-ef/" target="_blank" rel="noopener">Apuração de Frequência</a></b> na IntraALMG, aperte <kbd>Ctrl</kbd>+<kbd>A</kbd> e depois <kbd>Ctrl</kbd>+<kbd>C</kbd>.</li>
+        <li><b>Abra a <a href="https://intranet-integracao.almg.gov.br/frequencia/freq_ef.do" target="_blank" rel="noopener">Apuração de Frequência</a></b> (o link abre só a tabela, sem o menu da IntraALMG), aperte <kbd>Ctrl</kbd>+<kbd>A</kbd> e depois <kbd>Ctrl</kbd>+<kbd>C</kbd>.</li>
         <li><b>Volte aqui e cole</b> no quadro “Importar da IntraALMG”. Horários, ocorrências e saldo anterior entram sozinhos.</li>
       </ol>
       <p class="gnote">Seus dados ficam só neste navegador. Para levar a outro aparelho, use o backup nos Ajustes.</p>
@@ -228,7 +228,7 @@ footer{color:var(--muted);font-size:12.5px;display:flex;flex-wrap:wrap;gap:6px 1
   <div class="panels">
     <section class="card panel" id="importPanel">
       <h2>Importar da IntraALMG</h2>
-      <p>Abra a <a href="https://intra.almg.gov.br/meus-dados/frequencia-e-jornada-de-trabalho/apuracao-de-frequencia-ef/" target="_blank" rel="noopener">Apuração de Frequência</a>, selecione a página toda (Ctrl+A), copie e cole aqui. Entram os horários, as ocorrências (férias, licenças, convocações, feriados), o saldo anterior do extrato e a diferença oficial do mês, para conferir com o cálculo daqui. A tabela das <a href="https://intra.almg.gov.br/meus-dados/frequencia-e-jornada-de-trabalho/marcacoes-de-ponto/index.html" target="_blank" rel="noopener">Marcações de Ponto</a> também funciona, só com os horários.</p>
+      <p>Abra a <a href="https://intranet-integracao.almg.gov.br/frequencia/freq_ef.do" target="_blank" rel="noopener">Apuração de Frequência</a> (abre só a tabela, sem o menu da IntraALMG; é preciso estar logado), aperte Ctrl+A, copie e cole aqui. Entram os horários, as ocorrências (férias, licenças, convocações, feriados), o saldo anterior do extrato e a diferença oficial do mês, para conferir com o cálculo daqui. A tabela das <a href="https://intra.almg.gov.br/meus-dados/frequencia-e-jornada-de-trabalho/marcacoes-de-ponto/index.html" target="_blank" rel="noopener">Marcações de Ponto</a> também funciona, só com os horários.</p>
       <textarea id="paste" placeholder="01&#9;qui&#9;&#9;&#9;8:00&#9;Férias regulamentares&#10;06&#9;ter&#9;10:10&#10;21:21&#9;10:00&#9;10:00&#9;Convocação para execução de jornada extraordinária&#10;…"></textarea>
       <div class="row">
         <button class="primary" id="doImport">Preencher o mês</button>
@@ -266,7 +266,7 @@ footer{color:var(--muted);font-size:12.5px;display:flex;flex-wrap:wrap;gap:6px 1
   </div>
 
   <footer>
-    <span>Iniciativa independente de um servidor da ALMG, sem vínculo oficial com a Assembleia. Confira sempre a <a href="https://intra.almg.gov.br/meus-dados/frequencia-e-jornada-de-trabalho/apuracao-de-frequencia-ef/" target="_blank" rel="noopener">Apuração de Frequência</a>.</span>
+    <span>Iniciativa independente de um servidor da ALMG, sem vínculo oficial com a Assembleia. Confira sempre a <a href="https://intranet-integracao.almg.gov.br/frequencia/freq_ef.do" target="_blank" rel="noopener">Apuração de Frequência</a>.</span>
     <span>Ramal freq. 7468 · Ramal reg. 7144 · <a href="https://docs.google.com/forms/d/1UQ4VKym3mkc8dA4Iq3LDcL_bglBevWpdvEQcwGpEjKQ/viewform" target="_blank" rel="noopener">Sugestões</a></span>
   </footer>
 </div>
@@ -668,7 +668,7 @@ footer{color:var(--muted);font-size:12.5px;display:flex;flex-wrap:wrap;gap:6px 1
     const n = importText(txt);
     const sm = importSummary(txt);
     const msg = $("importMsg");
-    if (!n && !sm.length) { msg.textContent = "Não encontrei os dias na colagem. Na Apuração de Frequência, selecione a página toda (Ctrl+A), copie e cole aqui."; msg.className = "msg err"; render(); return; }
+    if (!n && !sm.length) { msg.textContent = "Não encontrei os dias na colagem. Abra a Apuração de Frequência pelo link acima, aperte Ctrl+A, copie e cole aqui."; msg.className = "msg err"; render(); return; }
     const parts = [];
     if (n) parts.push(n + (n === 1 ? " dia preenchido" : " dias preenchidos"));
     parts.push(...sm);
