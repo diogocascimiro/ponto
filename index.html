@@ -606,7 +606,10 @@ footer{color:var(--muted);font-size:12.5px;display:flex;flex-wrap:wrap;gap:6px 1
   async function anySaved(){
     if (savedFlag != null) return savedFlag;
     if (mode === "db") { try { const s = await db.doc("data/users/" + uid + "/config").get(); savedFlag = s.exists; } catch { savedFlag = false; } }
-    else savedFlag = !!lsGet("config");
+    else {
+      savedFlag = !!lsGet("config");
+      try { for (let i = 0; !savedFlag && i < localStorage.length; i++) if (/^almg-freq:\d{4}-\d{2}$/.test(localStorage.key(i) || "")) savedFlag = true; } catch {}
+    }
     return savedFlag;
   }
   async function loadCfg(){
@@ -745,7 +748,7 @@ footer{color:var(--muted);font-size:12.5px;display:flex;flex-wrap:wrap;gap:6px 1
       lsSet("guia", true);
       const j = Number($("gJornada").value);
       if (j && j !== cfg.jornada) { cfg.jornada = j; if (cfg.max < j) cfg.max = j + 120; }
-      if (dlg.returnValue === "go") { example = false; month = { dias: {}, anterior: null }; render(); save(); $("paste").focus(); $("importPanel").scrollIntoView({ behavior: "smooth", block: "center" }); }
+      if (dlg.returnValue === "go") { if (example) { example = false; month = { dias: {}, anterior: null }; save(); } render(); $("paste").focus(); $("importPanel").scrollIntoView({ behavior: "smooth", block: "center" }); }
       else render();
     }, { once: true });
   }
@@ -772,7 +775,7 @@ footer{color:var(--muted);font-size:12.5px;display:flex;flex-wrap:wrap;gap:6px 1
     await loadCfg();
     await loadMonth();
     storeMsg(mode === "db" ? "Seus dados ficam salvos na sua conta, visíveis só para você" : "Seus dados ficam salvos neste navegador");
-    if (!lsGet("guia") && !savedFlag) openGuide();
+    if (!lsGet("guia") && !(await anySaved())) openGuide();
   })();
 })();
 </script>
