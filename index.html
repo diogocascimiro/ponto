@@ -17,6 +17,9 @@
 <meta property="og:locale" content="pt_BR">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="theme-color" content="#f3f1ea">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-192.png">
+<script data-goatcounter="https://almgdigital.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
 <style>
@@ -84,7 +87,21 @@ button.icon{width:38px;height:38px;padding:0;font-size:18px;line-height:1}
 .stat.hero{background:var(--accent-soft)}
 .stat.hero .v{font-family:var(--f-display);font-weight:800;font-size:40px;line-height:1}
 .pos{color:var(--good)} .neg{color:var(--bad)}
-.oficial{font-family:var(--f-mono);font-size:11.5px} .oficial.ok{color:var(--good)} .oficial.diff{color:var(--warn)}
+.oficial{font-family:var(--f-mono);font-size:11.5px}
+.pill.cmiss{background:var(--bad-soft);color:var(--bad);font-family:var(--f-body);font-weight:600;font-size:11px}
+tr.missing td.day{color:var(--bad)}
+.notify{flex-basis:100%;display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:4px}
+.notify select{font:inherit;font-size:13.5px;padding:6px 8px;border:1px solid var(--line);border-radius:8px;background:var(--soft);color:var(--ink)}
+.notify .muted{font-size:12.5px}
+dialog#guide{border:0;border-radius:18px;padding:0;max-width:min(520px,calc(100vw - 32px));background:var(--paper);color:var(--ink);box-shadow:0 30px 60px -20px rgba(0,0,0,.5)}
+dialog#guide::backdrop{background:rgba(20,10,12,.55)}
+.guide{padding:24px;display:grid;gap:14px}
+.guide h2{font-family:var(--f-display);font-weight:800;font-size:24px;margin:0}
+.guide ol{margin:0;padding-left:20px;display:grid;gap:12px}
+.guide .gl{display:grid;gap:4px;margin-top:6px;font-size:13px;color:var(--muted)}
+.guide select{font:inherit;padding:7px 8px;border:1px solid var(--line);border-radius:8px;background:var(--soft);color:var(--ink);max-width:240px}
+.guide kbd{font-family:var(--f-mono);font-size:12px;border:1px solid var(--line);border-bottom-width:2px;border-radius:5px;padding:1px 5px;background:var(--soft)}
+.gnote{margin:0;color:var(--muted);font-size:13px} .oficial.ok{color:var(--good)} .oficial.diff{color:var(--warn)}
 @media (max-width:820px){.summary{grid-template-columns:1fr 1fr}.stat.hero{grid-column:1/-1}}
 
 .notice{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;justify-content:space-between;border-radius:12px;padding:12px 16px;background:var(--warn-soft);color:var(--ink);border:1px solid var(--line)}
@@ -179,6 +196,21 @@ footer{color:var(--muted);font-size:12.5px;display:flex;flex-wrap:wrap;gap:6px 1
 
   <div class="today" id="todayBox" hidden></div>
 
+  <dialog id="guide" aria-labelledby="guideTitle">
+    <form method="dialog" class="guide">
+      <h2 id="guideTitle">Comece em 3 passos</h2>
+      <ol>
+        <li><b>Escolha sua jornada.</b>
+          <label for="gJornada" class="gl">Jornada diária
+            <select id="gJornada"><option value="480">8h (40h semanais)</option><option value="420">7h (35h semanais)</option><option value="360">6h (30h semanais)</option></select></label></li>
+        <li><b>Abra a <a href="https://intra.almg.gov.br/meus-dados/frequencia-e-jornada-de-trabalho/apuracao-de-frequencia-ef/" target="_blank" rel="noopener">Apuração de Frequência</a></b> na IntraALMG, aperte <kbd>Ctrl</kbd>+<kbd>A</kbd> e depois <kbd>Ctrl</kbd>+<kbd>C</kbd>.</li>
+        <li><b>Volte aqui e cole</b> no quadro “Importar da IntraALMG”. Horários, ocorrências e saldo anterior entram sozinhos.</li>
+      </ol>
+      <p class="gnote">Seus dados ficam só neste navegador. Para levar a outro aparelho, use o backup nos Ajustes.</p>
+      <div class="row"><button class="primary" id="gGo" value="go">Começar</button><button id="gLater" value="later">Ver o exemplo primeiro</button></div>
+    </form>
+  </dialog>
+
   <section class="card tablebox" aria-label="Dias úteis do mês">
     <table>
       <thead>
@@ -219,6 +251,7 @@ footer{color:var(--muted);font-size:12.5px;display:flex;flex-wrap:wrap;gap:6px 1
         <div>Acima de 7h registradas, desconta 1h de intervalo (ou o intervalo marcado, se for maior). Entre 6h e 7h, conta 6h.</div>
       </div>
       <span class="msg" id="storeMsg"></span>
+      <button id="openGuide" type="button">Ver o guia de primeiros passos</button>
       <div class="backup">
         <h3>Backup</h3>
         <p>Seus lançamentos ficam só neste navegador. Para levar para outro computador ou celular, ou para não perder nada ao limpar o navegador, salve um backup e restaure no outro aparelho.</p>
@@ -234,7 +267,7 @@ footer{color:var(--muted);font-size:12.5px;display:flex;flex-wrap:wrap;gap:6px 1
 
   <footer>
     <span>Iniciativa independente de um servidor da ALMG, sem vínculo oficial com a Assembleia. Confira sempre a <a href="https://intra.almg.gov.br/meus-dados/frequencia-e-jornada-de-trabalho/apuracao-de-frequencia-ef/" target="_blank" rel="noopener">Apuração de Frequência</a>.</span>
-    <span>Ramal freq. 7468 · Ramal reg. 7144</span>
+    <span>Ramal freq. 7468 · Ramal reg. 7144 · <a href="https://docs.google.com/forms/d/1UQ4VKym3mkc8dA4Iq3LDcL_bglBevWpdvEQcwGpEjKQ/viewform" target="_blank" rel="noopener">Sugestões</a></span>
   </footer>
 </div>
 
@@ -337,7 +370,9 @@ footer{color:var(--muted);font-size:12.5px;display:flex;flex-wrap:wrap;gap:6px 1
       let saldo = null;
       if (oc === "Folga") running -= cfg.jornada, saldo = running;
       else if (c.apur != null) { running += c.apur - (oc === "Férias" ? 0 : cfg.jornada); saldo = running; }
-      return { d, w, r, c, hol, saldo, today: isCur && d === now.getDate() };
+      const past = isCur ? d < now.getDate() : isPast;
+      const missing = past && example === false && r.e == null && !oc && !hol;
+      return { d, w, r, c, hol, saldo, missing, today: isCur && d === now.getDate() };
     });
     const extra = cfg.max - cfg.jornada;
     const saldoMes = soma - (dias + folgas) * cfg.jornada;
@@ -383,6 +418,7 @@ footer{color:var(--muted);font-size:12.5px;display:flex;flex-wrap:wrap;gap:6px 1
       ocCell.appendChild(sel);
       const codeCell = td("code");
       if (row.c.code) { const p = document.createElement("span"); p.className = "pill " + (row.c.code === "78" ? "c78" : row.c.code === "-" ? "cok" : "cx"); p.textContent = row.c.code; codeCell.appendChild(p); }
+      else if (row.missing) { tr.classList.add("missing"); const p = document.createElement("span"); p.className = "pill cmiss"; p.textContent = "sem registro"; p.title = "Dia útil que já passou sem marcação nem ocorrência"; codeCell.appendChild(p); }
       td("num", fmt(row.c.reg));
       td("num", fmt(row.c.int));
       td("num", fmt(row.c.apur));
@@ -414,13 +450,53 @@ footer{color:var(--muted);font-size:12.5px;display:flex;flex-wrap:wrap;gap:6px 1
     const box = $("todayBox"); const t = k.rows.find(r => r.today);
     if (!t || t.r.e == null || t.r.s != null) { box.hidden = true; return; }
     const e = t.r.e;
-    const sMax = e + cfg.max + 60, sJor = e + cfg.jornada + 60, sMin = e + cfg.min;
+    const need = m => m <= cfg.min ? m : m + 60; // até o mínimo não há intervalo; acima, soma 1h
+    const sMax = e + need(cfg.max), sJor = e + need(cfg.jornada), sMin = e + cfg.min;
     box.textContent = "";
     const add = (cls, txt) => { const s = document.createElement("span"); s.className = cls; s.textContent = txt; box.appendChild(s); };
-    add("muted", "Hoje você entrou às " + clock(e) + ". Para cumprir as 8h líquidas, saia às ");
+    const hJ = fmt(cfg.jornada).replace(":00", "h"), hM = fmt(cfg.max).replace(":00", "h");
+    add("muted", "Hoje você entrou às " + clock(e) + ". Para cumprir as " + hJ + " líquidas, saia às ");
     add("big", clock(sJor));
-    add("muted", " Para fechar 10h líquidas, às " + clock(sMax) + (sMax > 1140 ? " (depois das 19:00 gera o código 78)" : "") + " · mínimo de 6h às " + clock(sMin) + ".");
+    add("muted", " Para fechar " + hM + " líquidas, às " + clock(sMax) + (sMax > 1140 ? " (depois das 19:00 gera o código 78)" : "") + " · mínimo de 6h às " + clock(sMin) + ".");
+    const nb = document.createElement("div"); nb.className = "notify";
+    const pref = lsGet("aviso") || { on: false, alvo: "jornada" };
+    if (!("Notification" in window)) { nb.textContent = "Este navegador não mostra avisos."; }
+    else {
+      const sel = document.createElement("select"); sel.id = "avisoAlvo"; sel.setAttribute("aria-label", "Horário do aviso");
+      [["jornada", "às " + clock(sJor) + " (" + hJ + ")"], ["max", "às " + clock(sMax) + " (" + hM + ")"]].forEach(([v, l]) => { const o = document.createElement("option"); o.value = v; o.textContent = l; sel.appendChild(o); });
+      sel.value = pref.alvo;
+      const btn = document.createElement("button"); btn.id = "avisoBtn";
+      btn.textContent = pref.on && Notification.permission === "granted" ? "Aviso ligado ✓ (desligar)" : "Me avisar na hora de sair";
+      btn.addEventListener("click", async () => {
+        const cur = lsGet("aviso") || { on: false, alvo: sel.value };
+        if (cur.on) { lsSet("aviso", { on: false, alvo: sel.value }); scheduleAviso(null); render(); return; }
+        const perm = Notification.permission === "granted" ? "granted" : await Notification.requestPermission();
+        if (perm !== "granted") { btn.textContent = "Avisos bloqueados no navegador"; return; }
+        lsSet("aviso", { on: true, alvo: sel.value }); render();
+      });
+      sel.addEventListener("change", () => { const cur = lsGet("aviso") || {}; lsSet("aviso", { ...cur, alvo: sel.value }); render(); });
+      nb.append(btn, sel);
+      const lbl = document.createElement("span"); lbl.className = "muted"; lbl.textContent = "Funciona com esta página aberta (pode ficar em outra aba)."; nb.appendChild(lbl);
+    }
+    box.appendChild(nb);
     box.hidden = false;
+    const p2 = lsGet("aviso");
+    scheduleAviso(p2 && p2.on && "Notification" in window && Notification.permission === "granted" ? (p2.alvo === "max" ? sMax : sJor) : null, p2 && p2.alvo === "max" ? hM : hJ);
+  }
+
+  let avisoTimer = null, avisoKey = null;
+  function scheduleAviso(min, label){
+    const key = min == null ? null : ym() + "-" + now.getDate() + "-" + min;
+    if (key === avisoKey) return;
+    clearTimeout(avisoTimer); avisoTimer = null; avisoKey = key;
+    if (min == null) return;
+    const t = new Date(); t.setHours(Math.floor(min / 60), min % 60, 0, 0);
+    const ms = t - Date.now(); if (ms < 0) return;
+    avisoTimer = setTimeout(async () => {
+      const title = "Hora de sair: " + clock(min), body = "Você completou " + label + " líquidas hoje.";
+      try { const reg = navigator.serviceWorker && await navigator.serviceWorker.getRegistration(); if (reg) { reg.showNotification(title, { body, icon: "icon-192.png", tag: "saida" }); return; } } catch {}
+      try { new Notification(title, { body }); } catch {}
+    }, ms);
   }
 
   // ---------- edição ----------
@@ -658,6 +734,23 @@ footer{color:var(--muted);font-size:12.5px;display:flex;flex-wrap:wrap;gap:6px 1
     backupMsg("Backup restaurado: " + keys.length + (keys.length === 1 ? " mês" : " meses") + ".", "ok");
   });
 
+  if ("serviceWorker" in navigator && location.protocol === "https:") navigator.serviceWorker.register("sw.js").catch(() => {});
+
+  // ---------- guia da primeira visita ----------
+  function openGuide(){
+    const dlg = $("guide"); if (!dlg || !dlg.showModal) return;
+    $("gJornada").value = String(cfg.jornada);
+    try { dlg.showModal(); } catch { return; }
+    dlg.addEventListener("close", () => {
+      lsSet("guia", true);
+      const j = Number($("gJornada").value);
+      if (j && j !== cfg.jornada) { cfg.jornada = j; if (cfg.max < j) cfg.max = j + 120; }
+      if (dlg.returnValue === "go") { example = false; month = { dias: {}, anterior: null }; render(); save(); $("paste").focus(); $("importPanel").scrollIntoView({ behavior: "smooth", block: "center" }); }
+      else render();
+    }, { once: true });
+  }
+  $("openGuide") && $("openGuide").addEventListener("click", openGuide);
+
   // ---------- cabeçalho fixo ----------
   (function(){
     const band = document.querySelector(".band");
@@ -679,6 +772,7 @@ footer{color:var(--muted);font-size:12.5px;display:flex;flex-wrap:wrap;gap:6px 1
     await loadCfg();
     await loadMonth();
     storeMsg(mode === "db" ? "Seus dados ficam salvos na sua conta, visíveis só para você" : "Seus dados ficam salvos neste navegador");
+    if (!lsGet("guia") && !savedFlag) openGuide();
   })();
 })();
 </script>
