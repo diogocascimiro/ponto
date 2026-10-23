@@ -43,12 +43,17 @@ body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:1
 header.top{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px}
 .band{position:sticky;top:0;z-index:20}
 @media (min-width:700px){
-  header.top{position:sticky;top:var(--bandH,55px);z-index:15;background:var(--bg);margin-inline:-8px;padding:10px 8px;border-radius:0 0 14px 14px;transition:box-shadow .2s,padding .2s}
-  body.stuck header.top{box-shadow:0 10px 18px -14px rgba(0,0,0,.45);padding-block:8px}
+  .pin{position:sticky;top:var(--bandH,55px);z-index:15;background:var(--bg);margin-inline:-8px;padding:10px 8px 12px;border-radius:0 0 16px 16px;display:grid;gap:12px;transition:box-shadow .2s}
+  body.stuck .pin{box-shadow:0 12px 20px -16px rgba(0,0,0,.5);padding-block:8px 10px;gap:8px}
   body.stuck .brand h1{font-size:24px}
   body.stuck .apptitle .tile{width:36px;height:36px}
   body.stuck .apptitle .sub{display:none}
+  body.stuck .stat{padding:8px 14px;gap:0}
+  body.stuck .stat .s{display:none}
+  body.stuck .stat .v{font-size:18px}
+  body.stuck .stat.hero .v{font-size:26px}
 }
+.pin{display:grid;gap:18px}
 @media (prefers-reduced-motion:reduce){header.top{transition:none}}
 .brand{display:grid;gap:14px}
 .band{background:#f3f1ea;color:#123b36;border-bottom:1px solid #dcd8cf}
@@ -141,6 +146,7 @@ footer{color:var(--muted);font-size:12.5px;display:flex;flex-wrap:wrap;gap:6px 1
 <body>
 <div class="band"><div class="bandin"><a class="brandbar" href="https://almg.digital" aria-label="ALMG.DIGITAL, todas as ferramentas"><svg viewBox="0 0 64 64" class="mk" aria-hidden="true"><rect width="64" height="64" rx="16" fill="#123b36"/><rect x="13" y="13" width="16" height="16" rx="4.5" fill="#f3f1ea"/><rect x="35" y="13" width="16" height="16" rx="4.5" fill="#f3f1ea" opacity=".5"/><rect x="13" y="35" width="16" height="16" rx="4.5" fill="#f3f1ea" opacity=".5"/><rect x="35" y="35" width="16" height="16" rx="8" fill="#6e0d17"/></svg><span class="wordmark">ALMG<i>.</i><span>DIGITAL</span></span></a></div></div>
 <div class="wrap">
+  <div class="pin">
   <header class="top">
     <div class="brand">
       <div class="apptitle"><svg class="tile" width="48" height="48" viewBox="0 0 64 64" style="--c:#8c1c2e" aria-hidden="true"><rect width="64" height="64" rx="18.7" fill="#8c1c2e"/><path d="M32 54C16 43 8 34 8 23.5 8 15.5 14 10 21 10c4.6 0 8.6 2.3 11 6 2.4-3.7 6.4-6 11-6 7 0 13 5.5 13 13.5C56 34 48 43 32 54z" fill="#fff"/><path d="M12 31h10l3.5-7 5 15 4.5-11 2.5 3H52" fill="none" stroke="var(--c)" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/></svg><div><h1>Controle de frequência</h1><span class="sub">Ponto · feito por servidor, para servidores</span></div></div>
@@ -152,13 +158,6 @@ footer{color:var(--muted);font-size:12.5px;display:flex;flex-wrap:wrap;gap:6px 1
     </div>
   </header>
 
-  <div class="notice" id="exampleNotice" hidden>
-    <div><b>Exemplo.</b> Estes horários são fictícios, só para mostrar como funciona. Cole as suas marcações da IntraALMG para começar.</div>
-    <div class="actions">
-      <button class="primary" id="goImport">Colar minhas marcações</button>
-      <button id="startBlank">Começar em branco</button>
-    </div>
-  </div>
 
   <section class="summary" aria-label="Resumo do mês">
     <div class="stat hero"><span class="k">Banco atual</span><span class="v" id="sBanco">—</span><span class="s" id="sBancoSub"></span></div>
@@ -167,6 +166,16 @@ footer{color:var(--muted);font-size:12.5px;display:flex;flex-wrap:wrap;gap:6px 1
     <div class="stat"><span class="k">Para zerar</span><span class="v" id="sZerar">—</span><span class="s">fazendo 10h por dia</span></div>
     <div class="stat"><span class="k">Apurado</span><span class="v" id="sApur">—</span><span class="s" id="sApurSub"></span></div>
   </section>
+  </div>
+
+  <div class="notice" id="exampleNotice" hidden>
+    <div><b>Exemplo.</b> Estes horários são fictícios, só para mostrar como funciona. Cole as suas marcações da IntraALMG para começar.</div>
+    <div class="actions">
+      <button class="primary" id="goImport">Colar minhas marcações</button>
+      <button id="startBlank">Começar em branco</button>
+    </div>
+  </div>
+
 
   <div class="today" id="todayBox" hidden></div>
 
