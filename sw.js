@@ -1,9 +1,12 @@
+
+
+Sw · JS
 // Service worker do ponto.almg.digital
 // Deixa o site abrir sem internet, permite instalar como app e mostrar o aviso de saída.
 // Estratégia: rede primeiro (sempre pega a versão nova); se falhar, usa a cópia guardada.
-const CACHE = "ponto-v1";
+const CACHE = "ponto-v2";
 const CORE = ["./", "index.html", "manifest.webmanifest", "icon-192.png", "icon-512.png"];
-
+ 
 self.addEventListener("install", event => {
   event.waitUntil(
     caches.open(CACHE)
@@ -11,7 +14,7 @@ self.addEventListener("install", event => {
       .then(() => self.skipWaiting())
   );
 });
-
+ 
 self.addEventListener("activate", event => {
   event.waitUntil(
     caches.keys()
@@ -19,7 +22,7 @@ self.addEventListener("activate", event => {
       .then(() => self.clients.claim())
   );
 });
-
+ 
 self.addEventListener("fetch", event => {
   const req = event.request;
   if (req.method !== "GET") return;
@@ -27,9 +30,11 @@ self.addEventListener("fetch", event => {
   const sameOrigin = url.origin === self.location.origin;
   const isFont = url.hostname === "fonts.googleapis.com" || url.hostname === "fonts.gstatic.com";
   if (!sameOrigin && !isFont) return; // contador de visitas e outros: direto na rede
-
+ 
+  // Arquivos do próprio site: sempre confere com o servidor (no-cache), para a versão nova aparecer na hora.
+  const net = sameOrigin ? fetch(req.url, { cache: "no-cache", credentials: "same-origin" }) : fetch(req);
   event.respondWith(
-    fetch(req)
+    net
       .then(res => {
         if (res && (res.ok || res.type === "opaque")) {
           const copy = res.clone();
@@ -42,7 +47,7 @@ self.addEventListener("fetch", event => {
       )
   );
 });
-
+ 
 // Clicar no aviso "Hora de sair" traz a página do ponto para a frente.
 self.addEventListener("notificationclick", event => {
   event.notification.close();
@@ -53,3 +58,6 @@ self.addEventListener("notificationclick", event => {
     })
   );
 });
+ 
+Claude terminou a resposta
+Este tipo de arquivo não pode ser aberto.
