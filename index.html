@@ -298,7 +298,8 @@ footer{color:var(--muted);font-size:12.5px;display:flex;flex-wrap:wrap;gap:6px 1
       12: { 7: ["Recesso", "Recesso"], 8: ["Feriado", "N. Sra. da Conceição"], 24: ["Recesso", "Recesso"], 25: ["Feriado", "Natal"], 31: ["Recesso", "Recesso"] }
     }
   };
-  const calFor = d => (CAL[view.y] && CAL[view.y][view.m + 1] && CAL[view.y][view.m + 1][d]) || null;
+  const calAt = (y, m, d) => (CAL[y] && CAL[y][m + 1] && CAL[y][m + 1][d]) || null;
+  const calFor = d => calAt(view.y, view.m, d);
   const hasCal = () => !!CAL[view.y];
   const WD = ["dom","seg","ter","qua","qui","sex","sáb"];
   const MONTHS = ["janeiro","fevereiro","março","abril","maio","junho","julho","agosto","setembro","outubro","novembro","dezembro"];
@@ -327,7 +328,7 @@ footer{color:var(--muted);font-size:12.5px;display:flex;flex-wrap:wrap;gap:6px 1
   const clock = min => min == null ? "" : String(Math.floor(min / 60) % 24).padStart(2, "0") + ":" + String(min % 60).padStart(2, "0");
 
   // ---------- estado ----------
-  const now = new Date();
+  let now = new Date();
   let view = { y: now.getFullYear(), m: now.getMonth() };
   let cfg = { jornada: 480, max: 600, min: 360, limiar: 420 };
   let month = null;          // { dias: {d:{e,ii,if,s,oc}}, anterior }
@@ -361,14 +362,14 @@ footer{color:var(--muted);font-size:12.5px;display:flex;flex-wrap:wrap;gap:6px 1
     return { code, reg, int, apur };
   }
 
-  function compute(){
-    const days = businessDays(view.y, view.m);
-    const isCur = view.y === now.getFullYear() && view.m === now.getMonth();
-    const isPast = new Date(view.y, view.m + 1, 1) <= new Date(now.getFullYear(), now.getMonth(), 1);
+  function compute(y = view.y, mo = view.m, mon = month, ex = example, ant = null){
+    const days = businessDays(y, mo);
+    const isCur = y === now.getFullYear() && mo === now.getMonth();
+    const isPast = new Date(y, mo + 1, 1) <= new Date(now.getFullYear(), now.getMonth(), 1);
     let soma = 0, dias = 0, folgas = 0, rest = 0, running = 0;
     const rows = days.map(({ d, w }) => {
-      const r0 = month.dias[d] || {};
-      const hol = calFor(d);
+      const r0 = (mon.dias || {})[d] || {};
+      const hol = calAt(y, mo, d);
       const r = { ...r0, oc: r0.oc !== undefined ? r0.oc : (hol ? hol[0] : "") };
       const c = calcDay(r);
       const oc = r.oc || "";
@@ -382,12 +383,12 @@ footer{color:var(--muted);font-size:12.5px;display:flex;flex-wrap:wrap;gap:6px 1
       if (oc === "Folga") running -= cfg.jornada, saldo = running;
       else if (c.apur != null) { running += c.apur - (oc === "Férias" ? 0 : cfg.jornada); saldo = running; }
       const past = isCur ? d < now.getDate() : isPast;
-      const missing = past && example === false && r.e == null && !oc && !hol;
+      const missing = past && ex === false && r.e == null && !oc && !hol;
       return { d, w, r, c, hol, saldo, missing, today: isCur && d === now.getDate() };
     });
     const extra = cfg.max - cfg.jornada;
     const saldoMes = soma - (dias + folgas) * cfg.jornada;
-    const anterior = month.anterior ?? 0;
+    const anterior = mon.anterior ?? (ant != null ? ant : (mon === month && !ex ? autoAnt : null)) ?? 0;
     const banco = anterior + saldoMes;
     const fim = banco + rest * extra;
     const zerar = banco >= 0 ? "Zerado" : (extra > 0 ? Math.ceil(-banco / extra) + (Math.ceil(-banco / extra) === 1 ? " dia" : " dias") : "—");
@@ -438,7 +439,9 @@ footer{color:var(--muted);font-size:12.5px;display:flex;flex-wrap:wrap;gap:6px 1
       tb.appendChild(tr);
     }
     $("sBanco").textContent = fmt(k.banco, true) || "0:00"; signClass($("sBanco"), k.banco);
-    $("sBancoSub").textContent = "saldo anterior " + (fmt(k.anterior, true) || "0:00") + " + mês";
+    const herdado = !example && month.anterior == null && autoAnt != null;
+    $("sBancoSub").textContent = "saldo anterior " + (fmt(k.anterior, true) || "0:00") + (herdado ? " (fim de " + autoFrom + ")" : "") + " + mês";
+    $("fAnterior").placeholder = herdado ? fmt(autoAnt, true) + " (herdado)" : "-36:21";
     $("sMes").textContent = fmt(k.saldoMes, true) || "0:00"; signClass($("sMes"), k.saldoMes);
     $("sMesSub").textContent = k.dias + (k.dias === 1 ? " dia apurado" : " dias apurados") + (k.folgas ? " · " + k.folgas + " folga" + (k.folgas > 1 ? "s" : "") : "");
     const of = month.oficial;
@@ -612,7 +615,29 @@ footer{color:var(--muted);font-size:12.5px;display:flex;flex-wrap:wrap;gap:6px 1
     if (!month.dias) month.dias = {};
     example = false;
     if (!data && !(await anySaved())) loadExample();
+    autoAnt = null; autoFrom = null;
+    if (!example && month.anterior == null) {
+      const pm = view.m === 0 ? 11 : view.m - 1, py = view.m === 0 ? view.y - 1 : view.y;
+      const v = await bancoFinal(py, pm, 12);
+      if (v != null) { autoAnt = v; autoFrom = MONTHS[pm]; }
+    }
     render();
+  }
+
+  // Saldo herdado: banco final do mês anterior salvo (volta até 12 meses procurando o último saldo oficial).
+  let autoAnt = null, autoFrom = null;
+  async function readMonth(y, m){
+    const key = y + "-" + String(m + 1).padStart(2, "0");
+    if (mode === "db") { try { const s = await db.doc("data/users/" + uid + "/" + key).get(); return s.exists ? s.data() : null; } catch { return null; } }
+    return lsGet(key);
+  }
+  async function bancoFinal(y, m, depth){
+    if (depth <= 0) return null;
+    const data = await readMonth(y, m);
+    if (!data) return null;
+    let ant = data.anterior;
+    if (ant == null) { const pm = m === 0 ? 11 : m - 1, py = m === 0 ? y - 1 : y; ant = await bancoFinal(py, pm, depth - 1); }
+    return compute(y, m, { dias: data.dias || {}, anterior: ant ?? 0 }, false).banco;
   }
   let savedFlag = null;
   async function anySaved(){
@@ -790,7 +815,17 @@ footer{color:var(--muted);font-size:12.5px;display:flex;flex-wrap:wrap;gap:6px 1
     if (view.y === d.getFullYear() && view.m === d.getMonth()) return;
     flush(); view = { y: d.getFullYear(), m: d.getMonth() }; loadMonth();
   });
-  setInterval(tickHoje, 20000);
+  // Virada do dia com a página aberta: atualiza "hoje", dias restantes e aviso de saída.
+  function checkDay(){
+    const d = new Date();
+    if (d.toDateString() === now.toDateString()) return;
+    const wasCur = view.y === now.getFullYear() && view.m === now.getMonth();
+    now = d; flush();
+    if (wasCur) view = { y: d.getFullYear(), m: d.getMonth() };
+    loadMonth();
+  }
+  setInterval(() => { checkDay(); tickHoje(); }, 20000);
+  document.addEventListener("visibilitychange", () => { if (!document.hidden) { checkDay(); tickHoje(); } });
 
   // ---------- início ----------
   month = { dias: {}, anterior: null }; loadExample(); render();
