@@ -174,7 +174,7 @@ footer{color:var(--muted);font-size:12.5px;display:flex;flex-wrap:wrap;gap:6px 1
   <div class="pin">
   <header class="top">
     <div class="brand">
-      <div class="apptitle"><svg class="tile" width="48" height="48" viewBox="0 0 64 64" style="--c:#8c1c2e" aria-hidden="true"><rect width="64" height="64" rx="18.7" fill="#8c1c2e"/><path d="M32 54C16 43 8 34 8 23.5 8 15.5 14 10 21 10c4.6 0 8.6 2.3 11 6 2.4-3.7 6.4-6 11-6 7 0 13 5.5 13 13.5C56 34 48 43 32 54z" fill="#fff"/><path d="M12 31h10l3.5-7 5 15 4.5-11 2.5 3H52" fill="none" stroke="var(--c)" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/></svg><div><h1>Controle de frequência</h1><span class="sub">Ponto · feito por servidor, para servidores</span></div></div>
+      <div class="apptitle"><svg class="tile" width="48" height="48" viewBox="0 0 64 64" style="--c:#8c1c2e" aria-hidden="true"><rect width="64" height="64" rx="18.7" fill="#8c1c2e"/><path d="M32 54C16 43 8 34 8 23.5 8 15.5 14 10 21 10c4.6 0 8.6 2.3 11 6 2.4-3.7 6.4-6 11-6 7 0 13 5.5 13 13.5C56 34 48 43 32 54z" fill="#fff"/><path d="M12 31h10l3.5-7 5 15 4.5-11 2.5 3H52" fill="none" stroke="var(--c)" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/></svg><div><h1>Controle de frequência</h1><span class="sub">Banco de horas</span></div></div>
     </div>
     <button type="button" class="hoje" id="hoje" title="Data de hoje"><span class="k">Hoje</span><span class="d" id="hojeData"></span><span class="h" id="hojeHora"></span></button>
     <div class="month">
@@ -375,7 +375,8 @@ footer{color:var(--muted);font-size:12.5px;display:flex;flex-wrap:wrap;gap:6px 1
       if (c.apur != null && oc !== "Férias" && oc !== "Folga") dias++;
       if (oc === "Folga") folgas++;
       const future = isCur ? d >= now.getDate() : !isPast;
-      if (r.e == null && !oc && future) rest++;
+      const emCurso = isCur && d === now.getDate() && r.e != null && r.s == null && !oc; // hoje: entrou e ainda não saiu
+      if ((r.e == null && !oc && future) || emCurso) rest++;
       let saldo = null;
       if (oc === "Folga") running -= cfg.jornada, saldo = running;
       else if (c.apur != null) { running += c.apur - (oc === "Férias" ? 0 : cfg.jornada); saldo = running; }
@@ -447,7 +448,7 @@ footer{color:var(--muted);font-size:12.5px;display:flex;flex-wrap:wrap;gap:6px 1
       $("sMesSub").appendChild(document.createElement("br")); $("sMesSub").appendChild(tag);
     }
     $("sFim").textContent = fmt(k.fim, true) || "0:00"; signClass($("sFim"), k.fim);
-    $("sFimSub").textContent = k.rest + (k.rest === 1 ? " dia restante" : " dias restantes") + " a 10h";
+    $("sFimSub").textContent = k.rest + (k.rest === 1 ? " dia restante" : " dias restantes") + " a 10h" + (k.rows.some(r => r.today && r.r.e != null && r.r.s == null && !r.r.oc) ? " (contando hoje)" : "");
     $("sZerar").textContent = k.zerar;
     $("sApur").textContent = fmt(k.soma);
     $("sApurSub").textContent = "jornada do mês " + fmt((k.dias + k.folgas) * cfg.jornada);
