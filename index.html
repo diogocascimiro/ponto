@@ -72,13 +72,14 @@ header.top{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:spac
 .brand h1{font-family:var(--f-display);font-weight:800;font-size:clamp(26px,5vw,36px);line-height:1.05;margin:0;text-wrap:balance}
 .month{display:flex;align-items:center;gap:6px}
 .hoje{display:grid;gap:1px;justify-items:center;align-self:center;background:none;border:0;padding:4px 10px;border-radius:10px;color:var(--ink);cursor:default}
-.hoje .k{font-family:var(--f-mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);font-weight:600}
+.hoje .top{display:inline-flex;align-items:center;gap:6px}
+.hoje .k{font-family:var(--f-mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);font-weight:600;background:var(--accent-soft);padding:2px 6px;border-radius:5px}
 .hoje .d{font-family:var(--f-display);font-weight:600;font-size:17px;white-space:nowrap}
 .hoje .d::first-letter{text-transform:uppercase}
 .hoje .h{font-family:var(--f-mono);font-size:13px;color:var(--muted)}
 .hoje.away{cursor:pointer;border:1px dashed var(--line)}
 .hoje.away:hover{border-color:var(--accent)}
-@media (min-width:700px){body.stuck .hoje .k{display:none}}
+@media (min-width:700px){body.stuck .hoje .top{display:none}}
 .month output{font-family:var(--f-display);font-weight:600;font-size:18px;min-width:9.5em;text-align:center;text-transform:capitalize}
 button{font:inherit;cursor:pointer;border-radius:8px;border:1px solid var(--line);background:var(--paper);color:var(--ink);padding:7px 12px}
 button:hover{border-color:var(--accent)}
@@ -176,7 +177,7 @@ footer{color:var(--muted);font-size:12.5px;display:flex;flex-wrap:wrap;gap:6px 1
     <div class="brand">
       <div class="apptitle"><svg class="tile" width="48" height="48" viewBox="0 0 64 64" style="--c:#8c1c2e" aria-hidden="true"><rect width="64" height="64" rx="18.7" fill="#8c1c2e"/><path d="M32 54C16 43 8 34 8 23.5 8 15.5 14 10 21 10c4.6 0 8.6 2.3 11 6 2.4-3.7 6.4-6 11-6 7 0 13 5.5 13 13.5C56 34 48 43 32 54z" fill="#fff"/><path d="M12 31h10l3.5-7 5 15 4.5-11 2.5 3H52" fill="none" stroke="var(--c)" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/></svg><div><h1>Controle de frequência</h1><span class="sub">Banco de horas</span></div></div>
     </div>
-    <button type="button" class="hoje" id="hoje" title="Data de hoje"><span class="k">Hoje</span><span class="d" id="hojeData"></span><span class="h" id="hojeHora"></span></button>
+    <button type="button" class="hoje" id="hoje" title="Data de hoje"><span class="top"><span class="k">Hoje</span><span class="h" id="hojeHora"></span></span><span class="d" id="hojeData"></span></button>
     <div class="month">
       <button class="icon" id="prev" aria-label="Mês anterior">‹</button>
       <output id="monthLabel"></output>
@@ -778,7 +779,7 @@ footer{color:var(--muted);font-size:12.5px;display:flex;flex-wrap:wrap;gap:6px 1
   function tickHoje(){
     const d = new Date();
     $("hojeData").textContent = d.toLocaleDateString("pt-BR", { weekday: "long", day: "numeric", month: "long" });
-    $("hojeHora").textContent = "agora " + String(d.getHours()).padStart(2, "0") + ":" + String(d.getMinutes()).padStart(2, "0");
+    $("hojeHora").textContent = String(d.getHours()).padStart(2, "0") + ":" + String(d.getMinutes()).padStart(2, "0");
     const away = !(view.y === d.getFullYear() && view.m === d.getMonth());
     const b = $("hoje"); b.classList.toggle("away", away);
     b.title = away ? "Voltar para o mês atual" : "Data de hoje";
