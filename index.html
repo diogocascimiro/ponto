@@ -102,6 +102,8 @@ tr.missing td.day{color:var(--bad)}
 .notify{flex-basis:100%;display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:4px}
 .notify select{font:inherit;font-size:13.5px;padding:6px 8px;border:1px solid var(--line);border-radius:8px;background:var(--soft);color:var(--ink)}
 .notify .muted{font-size:12.5px}
+.notify .chk{display:inline-flex;align-items:center;gap:6px;font-size:13.5px;cursor:pointer}
+.notify .chk input{width:16px;height:16px;accent-color:var(--accent);margin:0}
 dialog#guide{border:0;border-radius:18px;padding:0;max-width:min(520px,calc(100vw - 32px));background:var(--paper);color:var(--ink);box-shadow:0 30px 60px -20px rgba(0,0,0,.5)}
 dialog#guide::backdrop{background:rgba(20,10,12,.55)}
 .guide{padding:24px;display:grid;gap:14px}
@@ -474,28 +476,35 @@ footer{color:var(--muted);font-size:12.5px;display:flex;flex-wrap:wrap;gap:6px 1
     add("big", clock(sJor));
     add("muted", " Para fechar " + hM + " líquidas, às " + clock(sMax) + (sMax > 1140 ? " (depois das 19:00 gera o código 78)" : "") + " · mínimo de 6h às " + clock(sMin) + ".");
     const nb = document.createElement("div"); nb.className = "notify";
-    const pref = lsGet("aviso") || { on: false, alvo: "jornada" };
-    if (!("Notification" in window)) { nb.textContent = "Este navegador não mostra avisos."; }
-    else {
-      const sel = document.createElement("select"); sel.id = "avisoAlvo"; sel.setAttribute("aria-label", "Horário do aviso");
-      [["jornada", "às " + clock(sJor) + " (" + hJ + ")"], ["max", "às " + clock(sMax) + " (" + hM + ")"]].forEach(([v, l]) => { const o = document.createElement("option"); o.value = v; o.textContent = l; sel.appendChild(o); });
-      sel.value = pref.alvo;
-      const btn = document.createElement("button"); btn.id = "avisoBtn";
-      btn.textContent = pref.on && Notification.permission === "granted" ? "Aviso ligado ✓ (desligar)" : "Me avisar na hora de sair";
-      btn.addEventListener("click", async () => {
-        const cur = lsGet("aviso") || { on: false, alvo: sel.value };
-        if (cur.on) { lsSet("aviso", { on: false, alvo: sel.value }); scheduleAviso(null); render(); return; }
-        const perm = Notification.permission === "granted" ? "granted" : await Notification.requestPermission();
-        if (perm !== "granted") { btn.textContent = "Avisos bloqueados no navegador"; return; }
-        lsSet("aviso", { on: true, alvo: sel.value }); render();
-      });
-      sel.addEventListener("change", () => { const cur = lsGet("aviso") || {}; lsSet("aviso", { ...cur, alvo: sel.value }); render(); });
-      nb.append(btn, sel);
-      const lbl = document.createElement("span"); lbl.className = "muted"; lbl.textContent = "Funciona com esta página aberta (pode ficar em outra aba)."; nb.appendChild(lbl);
-    }
+    const pref = { on: true, alvo: "jornada", ...(lsGet("aviso") || {}) }; // marcado por padrão
+if (!("Notification" in window)) { nb.textContent = "Este navegador não mostra avisos."; }
+else {
+const lab = document.createElement("label"); lab.className = "chk";
+const cb = document.createElement("input"); cb.type = "checkbox"; cb.id = "avisoOn"; cb.checked = !!pref.on;
+lab.append(cb, " Me avisar na hora de sair");
+const sel = document.createElement("select"); sel.id = "avisoAlvo"; sel.setAttribute("aria-label", "Horário do aviso");
+[["jornada", "às " + clock(sJor) + " (" + hJ + ")"], ["max", "às " + clock(sMax) + " (" + hM + ")"]].forEach(([v, l]) => { const o = document.createElement("option"); o.value = v; o.textContent = l; sel.appendChild(o); });
+sel.value = pref.alvo; sel.disabled = !pref.on;
+cb.addEventListener("change", async () => {
+if (cb.checked && Notification.permission === "default") { try { await Notification.requestPermission(); } catch {} }
+lsSet("aviso", { on: cb.checked, alvo: sel.value }); render();
+});
+sel.addEventListener("change", () => { lsSet("aviso", { on: cb.checked, alvo: sel.value }); render(); });
+nb.append(lab, sel);
+const lbl = document.createElement("span"); lbl.className = "muted";
+if (pref.on && Notification.permission === "default") {
+const pb = document.createElement("button"); pb.type = "button"; pb.textContent = "Permitir avisos neste navegador";
+pb.addEventListener("click", async () => { try { await Notification.requestPermission(); } catch {} render(); });
+nb.appendChild(pb);
+lbl.textContent = "Falta só liberar os avisos uma vez.";
+} else if (pref.on && Notification.permission === "denied") {
+lbl.textContent = "Os avisos estão bloqueados no navegador. Libere nas permissões do site.";
+} else lbl.textContent = pref.on ? "Aviso ligado. Fica marcado para os próximos dias; funciona com esta página aberta (pode ficar em outra aba)." : "Funciona com esta página aberta (pode ficar em outra aba).";
+nb.appendChild(lbl);
+}
     box.appendChild(nb);
     box.hidden = false;
-    const p2 = lsGet("aviso");
+    const p2 = { on: true, alvo: "jornada", ...(lsGet("aviso") || {}) };
     scheduleAviso(p2 && p2.on && "Notification" in window && Notification.permission === "granted" ? (p2.alvo === "max" ? sMax : sJor) : null, p2 && p2.alvo === "max" ? hM : hJ);
   }
 
