@@ -408,7 +408,7 @@ footer{color:var(--muted);font-size:12.5px;display:flex;flex-wrap:wrap;gap:6px 1
     });
     const extra = cfg.max - cfg.jornada;
     const saldoMes = soma - (dias + folgas) * cfg.jornada;
-    const anterior = mon.anterior ?? (ant != null ? ant : (mon === month && !ex ? autoAnt : null)) ?? 0;
+    const anterior = reduzida() ? 0 : (mon.anterior ?? (ant != null ? ant : (mon === month && !ex ? autoAnt : null)) ?? 0);
     const banco = anterior + saldoMes;
     const fim = banco + rest * extra;
     const zerar = banco >= 0 ? "Zerado" : (extra > 0 ? Math.ceil(-banco / extra) + (Math.ceil(-banco / extra) === 1 ? " dia" : " dias") : "—");
@@ -421,7 +421,7 @@ footer{color:var(--muted);font-size:12.5px;display:flex;flex-wrap:wrap;gap:6px 1
     $("monthLabel").textContent = MONTHS[view.m] + " " + view.y;
     tickHoje();
     $("regraNote").textContent = reduzida()
-      ? "Jornada reduzida: até 6h registradas conta o que foi feito; entre 6h e 7h, conta 6h; acima de 7h, desconta 1h de intervalo (máximo de " + fmt(cfg.max).replace(":00", "h") + "). Minutos a mais não dependem de convocação, mas o crédito só vale dentro do mês: o saldo positivo não passa para o mês seguinte."
+      ? "Jornada reduzida: até 6h registradas conta o que foi feito; entre 6h e 7h, conta 6h; acima de 7h, desconta 1h de intervalo (máximo de " + fmt(cfg.max).replace(":00", "h") + "). Minutos a mais não dependem de convocação, e dá para compensar com um dia mais curto, mas o saldo vale só dentro do mês: nada passa para o mês seguinte."
       : "Acima de 7h registradas, desconta 1h de intervalo (ou o intervalo marcado, se for maior). Entre 6h e 7h, conta 6h.";
     $("calNote").textContent = hasCal() ? "Feriados e recessos de " + view.y + " já vêm marcados pelo calendário oficial da ALMG (Portaria 67/2025). Dá para trocar a ocorrência de qualquer dia." : "O calendário oficial de " + view.y + " ainda não está no site. Marque feriados e recessos à mão.";
     $("exampleNotice").hidden = !example;
@@ -463,7 +463,7 @@ footer{color:var(--muted);font-size:12.5px;display:flex;flex-wrap:wrap;gap:6px 1
     }
     $("sBanco").textContent = fmt(k.banco, true) || "0:00"; signClass($("sBanco"), k.banco);
     const herdado = !example && month.anterior == null && autoAnt != null;
-    $("sBancoSub").textContent = "saldo anterior " + (fmt(k.anterior, true) || "0:00") + (herdado ? " (fim de " + autoFrom + ")" : "") + " + mês";
+    $("sBancoSub").textContent = reduzida() ? "jornada reduzida: só o saldo deste mês" : "saldo anterior " + (fmt(k.anterior, true) || "0:00") + (herdado ? " (fim de " + autoFrom + ")" : "") + " + mês";
     $("fAnterior").placeholder = herdado ? fmt(autoAnt, true) + " (herdado)" : "-36:21";
     $("sMes").textContent = fmt(k.saldoMes, true) || "0:00"; signClass($("sMes"), k.saldoMes);
     $("sMesSub").textContent = k.dias + (k.dias === 1 ? " dia apurado" : " dias apurados") + (k.folgas ? " · " + k.folgas + " folga" + (k.folgas > 1 ? "s" : "") : "");
@@ -471,7 +471,7 @@ footer{color:var(--muted);font-size:12.5px;display:flex;flex-wrap:wrap;gap:6px 1
     if (of && of.dif != null) {
       const ok = of.dif === k.saldoMes;
       const tag = document.createElement("span"); tag.className = "oficial " + (ok ? "ok" : "diff");
-      tag.textContent = "IntraALMG: " + (fmt(of.dif, true) || "0:00") + (ok ? " ✓ confere" : " · diferente do calculado");
+      tag.textContent = "IntraALMG: " + (fmt(of.dif, true) || "0:00") + (ok ? " ✓ confere" : (k.semReg && of.dif === k.saldoMes + k.semReg) ? " · confere com o 78 ainda sem regularizar" : " · diferente do calculado");
       $("sMesSub").appendChild(document.createElement("br")); $("sMesSub").appendChild(tag);
     }
     if (k.semReg) {
@@ -480,7 +480,7 @@ footer{color:var(--muted);font-size:12.5px;display:flex;flex-wrap:wrap;gap:6px 1
       w.title = "Sem convocação, a IntraALMG só apura das 7:30 às 19:00 até a regularização com o código 78. Este seria o saldo do mês sem regularizar.";
       $("sMesSub").appendChild(document.createElement("br")); $("sMesSub").appendChild(w);
     }
-    if (reduzida() && k.saldoMes > 0) $("sMesSub").append(document.createElement("br"), Object.assign(document.createElement("span"), { className: "oficial", textContent: "crédito vale só neste mês" }));
+    if (reduzida()) $("sMesSub").append(document.createElement("br"), Object.assign(document.createElement("span"), { className: "oficial", textContent: "saldo vale só neste mês" }));
     $("sFim").textContent = fmt(k.fim, true) || "0:00"; signClass($("sFim"), k.fim);
     $("sFimSub").textContent = k.rest + (k.rest === 1 ? " dia restante" : " dias restantes") + " a 10h" + (k.rows.some(r => r.today && r.r.e != null && r.r.s == null && !r.r.oc) ? " (contando hoje)" : "");
     $("sZerar").textContent = k.zerar;
@@ -675,7 +675,7 @@ nb.appendChild(lbl);
     let ant = data.anterior;
     if (ant == null) { const pm = m === 0 ? 11 : m - 1, py = m === 0 ? y - 1 : y; ant = await bancoFinal(py, pm, depth - 1); }
     const b = compute(y, m, { dias: data.dias || {}, anterior: ant ?? 0 }, false).banco;
-    return reduzida() ? Math.min(b, 0) : b;
+    return reduzida() ? 0 : b;
   }
   let savedFlag = null;
   async function anySaved(){
