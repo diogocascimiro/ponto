@@ -167,23 +167,58 @@ textarea{width:100%;box-sizing:border-box;min-height:130px;font-family:var(--f-m
 .backup{display:grid;gap:8px;border-top:1px solid var(--line);padding-top:12px}
 .backup h3{font-family:var(--f-display);font-weight:600;font-size:16px;margin:0}
 /* apuração e extrato */
-.extrato{padding:16px 18px;display:grid;gap:14px}
-.exhead{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:4px 16px}
-.exhead h2{font-family:var(--f-display);font-weight:600;font-size:19px;margin:0}
-.exhead .s{color:var(--muted);font-size:13px}
+:root{--info:#0f6a73;--info-soft:#dcf0f1;--info-line:#a9d6da}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--info:#5cc6cf;--info-soft:#12302f;--info-line:#21524f}}
+:root[data-theme="dark"]{--info:#5cc6cf;--info-soft:#12302f;--info-line:#21524f}
+.extrato{padding:20px 20px 22px;display:grid;gap:18px;overflow:hidden}
+.exhead{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:10px 18px}
+.exhead .eyebrow{font-family:var(--f-mono);font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:600}
+.exhead h2{font-family:var(--f-display);font-weight:800;font-size:clamp(22px,3.4vw,28px);line-height:1.05;margin:2px 0 0;letter-spacing:-.01em}
+.exhead .s{color:var(--muted);font-size:13px;margin-top:4px;max-width:58ch}
+.tally{display:flex;flex-wrap:wrap;gap:6px}
+.chip{display:inline-flex;align-items:center;gap:5px;font-family:var(--f-mono);font-size:12px;font-weight:600;padding:4px 10px;border-radius:999px;white-space:nowrap;border:1px solid transparent}
+.chip.ok{background:var(--good-soft);color:var(--good);border-color:color-mix(in srgb,var(--good) 25%,transparent)}
+.chip.diff{background:var(--warn-soft);color:var(--warn);border-color:color-mix(in srgb,var(--warn) 30%,transparent)}
+.chip.mine{background:var(--info-soft);color:var(--info);border-color:var(--info-line)}
+.chip.none{background:var(--soft);color:var(--muted);border-color:var(--line);font-weight:500}
+/* conta do extrato */
+.conta{display:grid;grid-template-columns:1fr auto 1fr auto 1fr auto 1.25fr;align-items:stretch;gap:8px}
+.conta .op{align-self:center;font-family:var(--f-display);font-weight:800;font-size:24px;color:var(--muted);text-align:center;width:22px}
+.tile{border:1px solid var(--line);border-radius:14px;padding:12px 14px;display:grid;gap:6px;align-content:start;background:var(--soft);min-width:0}
+.tile .k{font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.tile .v{font-family:var(--f-display);font-weight:800;font-size:clamp(22px,3vw,30px);line-height:1;font-variant-numeric:tabular-nums}
+.tile.res{background:linear-gradient(135deg,var(--accent-soft),var(--paper));border-color:color-mix(in srgb,var(--accent) 35%,var(--line))}
+.tile.res .k{color:var(--accent)}
+.tile .alt{font-size:12px;color:var(--muted)}
+.tile .alt b{font-family:var(--f-mono);font-weight:600}
+.tile .chip{justify-self:start;white-space:normal;max-width:100%}
+@media (max-width:820px){.conta{grid-template-columns:1fr 1fr}.conta .op{display:none}}
+/* barra do mês */
+.meter{display:grid;gap:6px}
+.meter .bar{position:relative;height:12px;border-radius:999px;background:var(--soft);border:1px solid var(--line);overflow:hidden}
+.meter .fill{position:absolute;inset:0 auto 0 0;border-radius:999px;background:linear-gradient(90deg,var(--accent),color-mix(in srgb,var(--accent) 60%,#e8a33d))}
+.meter .mark{position:absolute;top:-3px;bottom:-3px;width:2px;background:var(--ink);opacity:.55}
+.meter .lbl{display:flex;justify-content:space-between;gap:10px;font-size:12px;color:var(--muted);flex-wrap:wrap}
+.meter .lbl b{font-family:var(--f-mono);color:var(--ink);font-weight:600}
+/* listas */
 .excols{display:grid;grid-template-columns:1fr 1fr;gap:18px}
 @media (max-width:820px){.excols{grid-template-columns:1fr}}
-table.ex{min-width:0;border:1px solid var(--line);border-radius:10px;border-collapse:separate;border-spacing:0;overflow:hidden}
-table.ex caption{caption-side:top;text-align:left;font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);font-weight:600;padding:0 0 6px}
-table.ex th{position:static;background:var(--soft);padding:7px 10px}
-table.ex th.n,table.ex td.n{text-align:right;width:6.5em}
-table.ex td{padding:7px 10px;white-space:normal;font-size:13.5px}
-table.ex td.n{font-family:var(--f-mono);white-space:nowrap}
-table.ex td small{display:block;color:var(--muted);font-size:11.5px;line-height:1.25}
-table.ex tr.mine td{background:var(--accent-soft)}
-table.ex tr.mine td:first-child::before{content:"só aqui";font-family:var(--f-mono);font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);font-weight:600;margin-right:6px}
-table.ex td.n.ok{color:var(--good)} table.ex td.n.diff{color:var(--warn);font-weight:600}
-table.ex td.n.none{color:var(--muted)}
+.exbox{display:grid;gap:10px;align-content:start;min-width:0}
+.exbox h3{display:flex;align-items:center;gap:8px;font-family:var(--f-display);font-weight:600;font-size:17px;margin:0}
+.exbox h3::before{content:"";width:8px;height:8px;border-radius:2px;background:var(--accent);transform:rotate(45deg)}
+.exlist{list-style:none;margin:0;padding:0;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--paper)}
+.exlist li{display:grid;grid-template-columns:1fr auto;gap:4px 12px;align-items:center;padding:10px 14px;border-top:1px solid var(--line)}
+.exlist li:first-child{border-top:0}
+.exlist li.bad{background:color-mix(in srgb,var(--warn-soft) 55%,var(--paper));box-shadow:inset 3px 0 0 var(--warn)}
+.exlist .lb{font-size:14px;font-weight:500;min-width:0}
+.exlist .lb small{display:block;color:var(--muted);font-size:12px;font-weight:400;line-height:1.3;margin-top:1px}
+.exlist .vals{display:flex;align-items:center;gap:10px;justify-content:flex-end}
+.exlist .v{font-family:var(--f-mono);font-size:16px;font-weight:600;font-variant-numeric:tabular-nums;min-width:4.2em;text-align:right}
+.exlist .delta{grid-column:1/-1;font-size:12px;color:var(--warn)}
+.exlist.mine{border-color:var(--info-line);background:linear-gradient(180deg,var(--info-soft),var(--paper) 70%)}
+.exlist.mine li{border-top-color:var(--info-line)}
+.mineh{display:flex;align-items:center;gap:8px;font-size:12px;letter-spacing:.1em;text-transform:uppercase;font-weight:600;color:var(--info);margin-top:4px}
+.mineh::before{content:"✦";font-size:13px;letter-spacing:0}
 td.num.diff{color:var(--warn);font-weight:600;text-decoration:underline dotted;cursor:help}
 .sit{display:block;font-family:var(--f-body);font-size:10.5px;color:var(--warn);white-space:normal;max-width:12em;line-height:1.2;margin:2px auto 0}
 footer{color:var(--muted);font-size:12.5px;display:flex;flex-wrap:wrap;gap:6px 16px;justify-content:space-between}
@@ -258,10 +293,15 @@ footer{color:var(--muted);font-size:12.5px;display:flex;flex-wrap:wrap;gap:6px 1
   </section>
 
   <section class="card extrato" aria-labelledby="exTitle">
-    <div class="exhead"><h2 id="exTitle">Apuração e extrato</h2><span class="s" id="exSub">Os mesmos números da IntraALMG, calculados aqui. Ao importar, a coluna IntraALMG mostra o oficial para conferir.</span></div>
+    <div class="exhead">
+      <div><div class="eyebrow">Conferência do mês</div><h2 id="exTitle">Apuração e extrato</h2><div class="s" id="exSub"></div></div>
+      <div class="tally" id="exTally"></div>
+    </div>
+    <div class="conta" id="exConta"></div>
+    <div class="meter" id="exMeter"></div>
     <div class="excols">
-      <table class="ex" id="exApur"><caption>Apuração</caption></table>
-      <table class="ex" id="exExt"><caption>Extrato</caption></table>
+      <div class="exbox"><h3>Apuração</h3><ul class="exlist" id="exApur"></ul><div class="mineh">Só no ALMG.DIGITAL</div><ul class="exlist mine" id="exApurMine"></ul></div>
+      <div class="exbox"><h3>Extrato</h3><ul class="exlist" id="exExt"></ul><div class="mineh">Só no ALMG.DIGITAL</div><ul class="exlist mine" id="exExtMine"></ul></div>
     </div>
   </section>
 
@@ -481,55 +521,100 @@ footer{color:var(--muted);font-size:12.5px;display:flex;flex-wrap:wrap;gap:6px 1
     return n;
   }
   function renderExtrato(k){
-    const a = k.ap, of = (!example && month.oficial) || {};
-    const temOf = !example && !!month.oficial;
-    const mk = (id, linhas) => {
-      const t = $(id); const cap = t.querySelector("caption"); t.textContent = ""; t.appendChild(cap);
-      const th = document.createElement("thead"); th.innerHTML = "<tr><th></th><th class='n'>Aqui</th><th class='n'>IntraALMG</th></tr>"; t.appendChild(th);
-      const tb = document.createElement("tbody");
+    const a = k.ap, temOf = !example && !!month.oficial, of = temOf ? month.oficial : {};
+    const red = reduzida(), h = v => fmt(v).replace(":00", "h");
+    const el = (tag, cls, txt) => { const x = document.createElement(tag); if (cls) x.className = cls; if (txt != null) x.textContent = txt; return x; };
+    const show = (v, L) => v == null ? "—" : (L.int ? String(v) : (fmt(v, L.sign) || "0:00"));
+    let nOk = 0, nDiff = 0, nMine = 0;
+    const chipFor = (L, v) => {
+      const o = L.cmp ? of[L.cmp] : L.mine ? undefined : of[L.of];
+      if (L.mine && !L.cmp) return null;
+      if (o == null) return el("span", "chip none", temOf ? "sem dado" : "importe");
+      if (L.id === "exImpares") return el("span", "chip none", "…");
+      const ok = o === v;
+      if (!L.mine) ok ? nOk++ : nDiff++;
+      const c = el("span", "chip " + (ok ? "ok" : "diff"), (ok ? "✓ " : "≠ ") + show(o, L));
+      c.title = ok ? "Confere com a IntraALMG" : "IntraALMG: " + show(o, L);
+      return { c, ok, o };
+    };
+    const list = (id, linhas) => {
+      const ul = $(id); ul.textContent = "";
       for (const L of linhas) {
-        const tr = document.createElement("tr"); if (L.mine) tr.className = "mine";
-        const c0 = document.createElement("td"); c0.textContent = L.k; if (L.sub) { const sm = document.createElement("small"); sm.textContent = L.sub; c0.appendChild(sm); } tr.appendChild(c0);
-        const show = v => v == null ? "—" : (L.int ? String(v) : (fmt(v, L.sign) || "0:00"));
-        const c1 = document.createElement("td"); c1.className = "n"; c1.textContent = show(L.v); if (L.id) c1.id = L.id;
-        if (L.sign && L.v) c1.classList.add(L.v > 0 ? "pos" : "neg");
-        const c2 = document.createElement("td"); c2.className = "n";
-        const o = L.mine ? (L.cmp ? of[L.cmp] : undefined) : of[L.of];
-        if (o == null) { c2.textContent = L.mine ? "não tem" : "—"; c2.classList.add("none"); }
-        else { c2.textContent = show(o); const ok = o === L.v; c2.classList.add(ok ? "ok" : "diff"); c2.title = ok ? "Confere" : "Diferente do calculado aqui"; if (ok) c2.textContent += " ✓"; }
-        tr.append(c1, c2); tb.appendChild(tr);
+        const li = el("li"); const lb = el("div", "lb", L.k); if (L.sub) lb.appendChild(el("small", "", L.sub));
+        const vals = el("div", "vals");
+        const v = el("span", "v", show(L.v, L)); if (L.id) v.id = L.id;
+        if (L.sign && L.v) v.classList.add(L.v > 0 ? "pos" : "neg");
+        vals.appendChild(v);
+        const ch = chipFor(L, L.v);
+        if (L.mine) nMine++;
+        if (ch && ch.c) { vals.appendChild(ch.c); if (!ch.ok && !L.int) { li.className = "bad"; const d = L.v - ch.o; li.append(lb, vals, el("div", "delta", "Diferença de " + (fmt(d, true) || "0:00") + " em relação à IntraALMG")); ul.appendChild(li); continue; } if (!ch.ok) li.className = "bad"; }
+        else if (ch) vals.appendChild(ch);
+        li.append(lb, vals); ul.appendChild(li);
       }
-      t.appendChild(tb);
+      ul.hidden = !linhas.length; if (ul.classList.contains("mine")) ul.previousElementSibling.hidden = !linhas.length;
     };
     const ult = a.ultimo ? "até o dia " + String(a.ultimo).padStart(2, "0") : "nenhum dia apurado ainda";
-    mk("exApur", [
+    list("exApur", [
       { k: "Dias úteis", v: a.diasUteis, of: "diasUteis", int: true },
-      { k: "Jornada ordinária mensal (prevista)", v: a.prevista, of: "prevista" },
-      { k: "Jornada ordinária parcial", sub: ult, v: a.parcial, of: "parcial" },
+      { k: "Jornada prevista no mês", v: a.prevista, of: "prevista" },
+      { k: "Jornada parcial", sub: ult, v: a.parcial, of: "parcial" },
       { k: "Jornada apurada", v: a.apurada, of: "apurada" },
       { k: "Diferença parcial", sub: ult, v: a.dif, of: "dif", sign: true },
-      ...(k.semReg ? [{ k: "Diferença se não regularizar", sub: "sem convocação, fora da prorrogação só conta das 7:30 às 19:00", v: a.dif + k.semReg, sign: true, mine: true, cmp: "dif" }] : []),
-      ...(a.semRegistro ? [{ k: "Dias sem registro", sub: "dias úteis que passaram sem marcação nem ocorrência: contam zero", v: a.semRegistro, int: true, mine: true }] : []),
-      { k: "Projeção do mês", sub: k.rest ? "fazendo " + fmt(cfg.max).replace(":00", "h") + " nos " + k.rest + " dias que faltam" : "mês completo", v: a.dif + k.rest * (cfg.max - cfg.jornada), sign: true, mine: true },
     ]);
-    const red = reduzida();
-    mk("exExt", [
-      { k: "Saldo anterior", sub: red ? "jornada reduzida: não traz saldo" : "", v: k.anterior, of: "anterior", sign: true },
+    list("exApurMine", [
+      ...(k.semReg ? [{ k: "Diferença se não regularizar", sub: "sem convocação, fora da prorrogação só conta das 7:30 às 19:00", v: a.dif + k.semReg, sign: true, mine: true, cmp: "dif" }] : []),
+      ...(a.semRegistro ? [{ k: "Dias sem registro", sub: "dias úteis que passaram sem marcação nem ocorrência", v: a.semRegistro, int: true, mine: true }] : []),
+      { k: "Projeção do mês", sub: k.rest ? "fazendo " + h(cfg.max) + " nos " + k.rest + " dias que faltam" : "mês completo", v: a.dif + k.rest * (cfg.max - cfg.jornada), sign: true, mine: true },
+    ]);
+    list("exExt", [
+      { k: "Saldo anterior", sub: red ? "jornada reduzida: o saldo não passa de um mês para outro" : "", v: k.anterior, of: "anterior", sign: true },
       { k: "Débitos no mês", v: a.debitos, of: "debitos" },
       { k: "Jornada em afastamento", v: a.afastamento, of: "afastamento" },
-      { k: "Créditos aprovados no mês", sub: a.aAprovar ? "a IntraALMG só lança os créditos depois de aprovados" : "", v: a.creditos, of: "creditos" },
+      { k: "Créditos aprovados", sub: a.aAprovar ? "a IntraALMG só lança depois da aprovação" : "", v: a.creditos, of: "creditos" },
       { k: "Saldo final", v: a.saldoFinal, of: "saldoFinal", sign: true },
-      ...(k.semReg ? [{ k: "Saldo final se não regularizar", v: k.anterior - Math.max(-(a.dif + k.semReg), 0) + (a.creditos ? Math.max(a.dif + k.semReg, 0) : 0), sign: true, mine: true, cmp: "saldoFinal" }] : []),
       { k: "Marcações ímpares no ano", v: null, of: "impares", int: true, id: "exImpares" },
-      ...(a.aAprovar ? [{ k: "Créditos a aprovar", sub: "diferença positiva do mês ainda sem aprovação", v: a.aAprovar, mine: true }, { k: "Saldo com os créditos", sub: "quando os créditos forem aprovados", v: a.comCreditos, sign: true, mine: true }] : []),
-      ...(!red && k.fim !== a.saldoFinal ? [{ k: "Banco no fim do mês", sub: k.rest ? "projeção fazendo " + fmt(cfg.max).replace(":00", "h") + " por dia" : "", v: k.fim, sign: true, mine: true }] : []),
     ]);
-    $("exSub").textContent = temOf ? "Calculado aqui e conferido com a IntraALMG (importado em " + (of.em || "").split("-").reverse().join("/") + "). As linhas \u201cSó aqui\u201d a IntraALMG não mostra." : "Os mesmos números da IntraALMG, calculados aqui. Importe a Apuração para conferir lado a lado. As linhas \u201cSó aqui\u201d a IntraALMG não mostra.";
+    list("exExtMine", [
+      ...(k.semReg ? [{ k: "Saldo final se não regularizar", v: k.anterior - Math.max(-(a.dif + k.semReg), 0) + (a.creditos ? Math.max(a.dif + k.semReg, 0) : 0), sign: true, mine: true, cmp: "saldoFinal" }] : []),
+      ...(a.aAprovar ? [{ k: "Créditos a aprovar", sub: "diferença positiva do mês, ainda sem aprovação", v: a.aAprovar, mine: true }, { k: "Saldo com os créditos", sub: "depois que os créditos forem aprovados", v: a.comCreditos, sign: true, mine: true }] : []),
+      ...(!red && k.fim !== a.saldoFinal ? [{ k: "Banco no fim do mês", sub: k.rest ? "fazendo " + h(cfg.max) + " por dia até o fim do mês" : "", v: k.fim, sign: true, mine: true }] : []),
+    ]);
+    // a conta do extrato
+    const conta = $("exConta"); conta.textContent = "";
+    const tile = (kk, v, ofk, cls, sign) => {
+      const t = el("div", "tile" + (cls ? " " + cls : "")); t.appendChild(el("span", "k", kk));
+      const vv = el("span", "v", fmt(v, sign) || "0:00"); if (sign && v) vv.classList.add(v > 0 ? "pos" : "neg"); t.appendChild(vv);
+      const o = of[ofk];
+      if (o != null) { const ok = o === v; t.appendChild(el("span", "chip " + (ok ? "ok" : "diff"), (ok ? "✓ confere" : "≠ IntraALMG " + (fmt(o, sign) || "0:00")))); }
+      else t.appendChild(el("span", "alt", temOf ? " " : "IntraALMG: importe para conferir"));
+      return t;
+    };
+    const op = (x, wrap) => el("span", "op" + (wrap ? " wrap" : ""), x);
+    conta.append(tile("Saldo anterior", k.anterior, "anterior", "", true), op("−"), tile("Débitos", a.debitos, "debitos"), op("+", true),
+      tile("Créditos aprovados", a.creditos, "creditos"), op("=", true), tile("Saldo final", a.saldoFinal, "saldoFinal", "res", true));
+    // barra do mês
+    const m = $("exMeter"); m.textContent = "";
+    const tot = Math.max(a.prevista, 1), pct = v => Math.max(0, Math.min(100, v / tot * 100));
+    const bar = el("div", "bar"); const fill = el("div", "fill"); fill.style.width = pct(a.apurada) + "%"; bar.appendChild(fill);
+    const mk = el("div", "mark"); mk.style.left = pct(a.parcial) + "%"; mk.title = "Jornada parcial devida até agora: " + fmt(a.parcial); bar.appendChild(mk);
+    const lbl = el("div", "lbl");
+    const l1 = el("span"); l1.append("Apurado ", el("b", "", fmt(a.apurada) || "0:00"), " de ", el("b", "", fmt(a.prevista) || "0:00"), " previstas");
+    const l2 = el("span"); l2.append("devido até agora ", el("b", "", fmt(a.parcial) || "0:00"), " · ", el("b", a.dif > 0 ? "pos" : a.dif < 0 ? "neg" : "", (fmt(a.dif, true) || "0:00")));
+    lbl.append(l1, l2); m.append(bar, lbl);
+    // resumo
+    const tally = $("exTally"); tally.textContent = "";
+    if (temOf) { if (nOk) tally.appendChild(el("span", "chip ok", "✓ " + nOk + (nOk === 1 ? " confere" : " conferem"))); if (nDiff) tally.appendChild(el("span", "chip diff", "≠ " + nDiff + (nDiff === 1 ? " difere" : " diferem"))); }
+    else tally.appendChild(el("span", "chip none", "IntraALMG ainda não importada"));
+    tally.appendChild(el("span", "chip mine", "✦ " + nMine + " só aqui"));
+    $("exSub").textContent = temOf
+      ? "Calculado aqui e conferido com a IntraALMG, importada em " + (of.em || "").split("-").reverse().join("/") + ". Em azul, o que a IntraALMG não mostra."
+      : "Os mesmos números da IntraALMG, calculados aqui. Importe a Apuração para conferir lado a lado. Em azul, o que a IntraALMG não mostra.";
     const y = view.y;
     imparesAno(y).then(n => {
       const c = $("exImpares"); if (!c || view.y !== y) return;
       c.textContent = String(n);
-      const o = c.nextElementSibling; if (o && of.impares != null) { const ok = of.impares === n; o.className = "n " + (ok ? "ok" : "diff"); o.textContent = of.impares + (ok ? " ✓" : ""); }
+      const chip = c.nextElementSibling;
+      if (chip && of.impares != null) { const ok = of.impares === n; chip.className = "chip " + (ok ? "ok" : "diff"); chip.textContent = (ok ? "✓ " : "≠ ") + of.impares; c.closest("li").classList.toggle("bad", !ok); }
     });
   }
 
