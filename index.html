@@ -508,7 +508,7 @@ footer{color:var(--muted);font-size:12.5px;display:flex;flex-wrap:wrap;gap:6px 1
       { k: "Jornada ordinária parcial", sub: ult, v: a.parcial, of: "parcial" },
       { k: "Jornada apurada", v: a.apurada, of: "apurada" },
       { k: "Diferença parcial", sub: ult, v: a.dif, of: "dif", sign: true },
-      ...(k.semReg ? [{ k: "Diferença se não regularizar o 78", sub: "sem convocação, só conta das 7:30 às 19:00", v: a.dif + k.semReg, sign: true, mine: true, cmp: "dif" }] : []),
+      ...(k.semReg ? [{ k: "Diferença se não regularizar", sub: "sem convocação, fora da prorrogação só conta das 7:30 às 19:00", v: a.dif + k.semReg, sign: true, mine: true, cmp: "dif" }] : []),
       ...(a.semRegistro ? [{ k: "Dias sem registro", sub: "dias úteis que passaram sem marcação nem ocorrência: contam zero", v: a.semRegistro, int: true, mine: true }] : []),
       { k: "Projeção do mês", sub: k.rest ? "fazendo " + fmt(cfg.max).replace(":00", "h") + " nos " + k.rest + " dias que faltam" : "mês completo", v: a.dif + k.rest * (cfg.max - cfg.jornada), sign: true, mine: true },
     ]);
@@ -519,7 +519,7 @@ footer{color:var(--muted);font-size:12.5px;display:flex;flex-wrap:wrap;gap:6px 1
       { k: "Jornada em afastamento", v: a.afastamento, of: "afastamento" },
       { k: "Créditos aprovados no mês", sub: a.aAprovar ? "a IntraALMG só lança os créditos depois de aprovados" : "", v: a.creditos, of: "creditos" },
       { k: "Saldo final", v: a.saldoFinal, of: "saldoFinal", sign: true },
-      ...(k.semReg ? [{ k: "Saldo final se não regularizar o 78", v: k.anterior - Math.max(-(a.dif + k.semReg), 0) + (a.creditos ? Math.max(a.dif + k.semReg, 0) : 0), sign: true, mine: true, cmp: "saldoFinal" }] : []),
+      ...(k.semReg ? [{ k: "Saldo final se não regularizar", v: k.anterior - Math.max(-(a.dif + k.semReg), 0) + (a.creditos ? Math.max(a.dif + k.semReg, 0) : 0), sign: true, mine: true, cmp: "saldoFinal" }] : []),
       { k: "Marcações ímpares no ano", v: null, of: "impares", int: true, id: "exImpares" },
       ...(a.aAprovar ? [{ k: "Créditos a aprovar", sub: "diferença positiva do mês ainda sem aprovação", v: a.aAprovar, mine: true }, { k: "Saldo com os créditos", sub: "quando os créditos forem aprovados", v: a.comCreditos, sign: true, mine: true }] : []),
       ...(!red && k.fim !== a.saldoFinal ? [{ k: "Banco no fim do mês", sub: k.rest ? "projeção fazendo " + fmt(cfg.max).replace(":00", "h") + " por dia" : "", v: k.fim, sign: true, mine: true }] : []),
@@ -571,7 +571,7 @@ footer{color:var(--muted);font-size:12.5px;display:flex;flex-wrap:wrap;gap:6px 1
       sel.addEventListener("change", () => { setField(row.d, "oc", sel.value || (row.hol ? "" : undefined)); });
       ocCell.appendChild(sel);
       const codeCell = td("code");
-      if (row.c.code) { const p = document.createElement("span"); p.className = "pill " + (row.c.code === "78" ? "c78" : row.c.code === "-" ? "cok" : "cx"); p.textContent = row.c.code; if (row.c.janela != null) p.title = "Sem convocação, até regularizar com o 78 a IntraALMG apura só das 7:30 às 19:00: " + fmt(row.c.janela); codeCell.appendChild(p); }
+      if (row.c.code) { const p = document.createElement("span"); p.className = "pill " + (row.c.code === "78" ? "c78" : row.c.code === "-" ? "cok" : "cx"); p.textContent = row.c.code; if (row.c.janela != null) p.title = "Sem convocação, até regularizar a IntraALMG apura só das 7:30 às 19:00: " + fmt(row.c.janela); codeCell.appendChild(p); }
       else if (row.missing) { tr.classList.add("missing"); const p = document.createElement("span"); p.className = "pill cmiss"; p.textContent = "sem registro"; p.title = "Dia útil que já passou sem marcação nem ocorrência"; codeCell.appendChild(p); }
       td("num", fmt(row.c.reg));
       td("num", fmt(row.c.int));
@@ -592,13 +592,13 @@ footer{color:var(--muted);font-size:12.5px;display:flex;flex-wrap:wrap;gap:6px 1
     if (of && of.dif != null) {
       const ok = of.dif === k.saldoMes;
       const tag = document.createElement("span"); tag.className = "oficial " + (ok ? "ok" : "diff");
-      tag.textContent = "IntraALMG: " + (fmt(of.dif, true) || "0:00") + (ok ? " ✓ confere" : (k.semReg && of.dif === k.saldoMes + k.semReg) ? " · confere com o 78 ainda sem regularizar" : " · diferente do calculado");
+      tag.textContent = "IntraALMG: " + (fmt(of.dif, true) || "0:00") + (ok ? " ✓ confere" : (k.semReg && of.dif === k.saldoMes + k.semReg) ? " · confere com o dia ainda sem regularizar" : " · diferente do calculado");
       $("sMesSub").appendChild(document.createElement("br")); $("sMesSub").appendChild(tag);
     }
     if (k.semReg) {
       const w = document.createElement("span"); w.className = "oficial diff";
-      w.textContent = "Se não regularizar o 78: " + (fmt(k.saldoMes + k.semReg, true) || "0:00");
-      w.title = "Sem convocação, a IntraALMG só apura das 7:30 às 19:00 até a regularização com o código 78. Este seria o saldo do mês sem regularizar.";
+      w.textContent = "Se não regularizar: " + (fmt(k.saldoMes + k.semReg, true) || "0:00");
+      w.title = "Sem convocação, a IntraALMG só apura das 7:30 às 19:00 até a regularização. Este seria o saldo do mês sem regularizar.";
       $("sMesSub").appendChild(document.createElement("br")); $("sMesSub").appendChild(w);
     }
     if (reduzida()) $("sMesSub").append(document.createElement("br"), Object.assign(document.createElement("span"), { className: "oficial", textContent: "saldo vale só neste mês" }));
@@ -724,8 +724,9 @@ nb.appendChild(lbl);
       const letras = f => /[a-zà-ú]{3,}/i.test(f || "");
       let oc = null, info = "", ofAp = null;
       if (apuracao) { // colunas da Apuração: marcações, registrada, apurada, ocorrência, validação, situação
-        oc = letras(fields[3]) ? (ocFrom(fields[3]) || null) : null;
-        info = fields.slice(4).map(f => f.replace(/\s+/g, " ").trim()).filter(letras).join(" · ");
+        const sit = /fora d[oa]|[íi]mpar|inconsist|aus[êe]ncia de marca/i; // avisos da IntraALMG na coluna de ocorrência
+        oc = letras(fields[3]) && !sit.test(fields[3]) ? (ocFrom(fields[3]) || null) : null;
+        info = fields.slice(sit.test(fields[3] || "") ? 3 : 4).map(f => f.split("\n").filter(l => !/^\s*\d+\s*-\s/.test(l)).join(" ").replace(/\s+/g, " ").trim()).filter(letras).join(" · ");
         const ap = (fields[2] || "").match(/\d{1,2}:\d{2}/); ofAp = ap ? parseT(ap[0]) : null;
         if (applyDay(s.d, times, oc, true)) { const r = month.dias[s.d]; if (r) { if (info) r.info = info; else delete r.info; if (ofAp != null) r.ofAp = ofAp; else delete r.ofAp; } n++; }
         return;
