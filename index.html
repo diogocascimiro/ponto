@@ -347,6 +347,11 @@ header.top{flex-wrap:nowrap;align-items:center;gap:8px}
 .hoje .d{font-size:14.5px}
 .month output{font-size:15px;min-width:8.2em}
 .month button.icon{width:30px;height:30px;font-size:15px}
+/* a sobra de altura das laterais vai para a linha da tabela, que estica até o fim delas */
+.wrap{grid-template-rows:auto 1fr;padding-bottom:10px}
+.wrap:has(>#exampleNotice:not([hidden])){grid-template-rows:auto auto 1fr}
+.wrap:has(>#exampleNotice:not([hidden]))>.extrato,.wrap:has(>#exampleNotice:not([hidden]))>.panels{grid-row:1 / span 3}
+.wrap>.tablebox{align-self:stretch}
 .pin,body.stuck .pin{padding-bottom:2px}
 .extrato .exlist li .delta{display:none}
 .extrato .conta .chip.diff{grid-column:1 / -1;justify-self:start;font-size:10px;padding:0 5px;white-space:nowrap}
