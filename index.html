@@ -583,7 +583,7 @@ header.top{flex-wrap:nowrap;align-items:center;gap:8px}
       if (reduzida()) {
         const base = reg > 360 ? 60 : 0;
         int = (ii != null && fi != null && s != null) ? Math.max(fi - ii, base) : base;
-        if (oc !== "Licença") apur = reg <= 360 ? reg : (reg <= 420 ? 360 : Math.min(reg - int, cfg.max));
+        if (oc !== "Licença") apur = reg < cfg.min ? 0 : (reg <= 360 ? reg : (reg <= 420 ? 360 : Math.min(reg - int, cfg.max)));
       } else {
         const base = reg > cfg.limiar ? 60 : 0;
         int = (ii != null && fi != null && s != null) ? Math.max(fi - ii, base) : base;
@@ -775,7 +775,7 @@ header.top{flex-wrap:nowrap;align-items:center;gap:8px}
     $("monthLabel").textContent = MONTHS[view.m] + " " + view.y;
     tickHoje();
     $("regraNote").textContent = reduzida()
-      ? "Jornada reduzida: até 6h registradas conta o que foi feito; entre 6h e 7h, conta 6h; acima de 7h, desconta 1h de intervalo (máximo de " + fmt(cfg.max).replace(":00", "h") + "). Minutos a mais não dependem de convocação, e dá para compensar com um dia mais curto, mas o saldo vale só dentro do mês: nada passa para o mês seguinte."
+      ? "Jornada reduzida: abaixo do mínimo, o dia não conta; até 6h registradas conta o que foi feito; entre 6h e 7h, conta 6h; acima de 7h, desconta 1h de intervalo (máximo de " + fmt(cfg.max).replace(":00", "h") + "). Minutos a mais não dependem de convocação, e dá para compensar com um dia mais curto, mas o saldo vale só dentro do mês: nada passa para o mês seguinte."
       : "Até 6h registradas, conta o que foi feito (abaixo do mínimo, o dia não conta). Entre 6h e 7h, conta 6h. Acima de 7h, desconta 1h de intervalo (ou o intervalo marcado, se for maior). Depois das 22h, cada hora conta 20% a mais (hora noturna).";
     $("calNote").textContent = hasCal() ? "Feriados e recessos de " + view.y + " já vêm marcados pelo calendário oficial da ALMG (Portaria 67/2025). Dá para trocar a ocorrência de qualquer dia." : "O calendário oficial de " + view.y + " ainda não está no site. Marque feriados e recessos à mão.";
     $("exampleNotice").hidden = !example;
