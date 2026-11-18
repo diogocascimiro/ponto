@@ -815,9 +815,9 @@ footer{color:var(--muted);font-size:12.5px;display:flex;flex-wrap:wrap;gap:6px 1
     box.textContent = "";
     const add = (cls, txt) => { const s = document.createElement("span"); s.className = cls; s.textContent = txt; box.appendChild(s); };
     const hJ = fmt(cfg.jornada).replace(":00", "h"), hM = fmt(cfg.max).replace(":00", "h");
-    add("muted", "Entrou às " + clock(e) + " · " + hJ + " líquidas às ");
+    add("muted", "Entrou " + clock(e) + " · " + hJ + " às ");
     add("big", clock(sJor));
-    add("muted", "· " + hM + " às " + clock(sMax) + (sMax > 1140 && !reduzida() ? " (código 78)" : "") + (reduzida() ? "" : " · mínimo de 6h às " + clock(sMin)));
+    add("muted", "· " + hM + " às " + clock(sMax) + (sMax > 1140 && !reduzida() ? " (cód. 78)" : "") + (reduzida() ? "" : " · mín. 6h às " + clock(sMin)));
     const nb = document.createElement("div"); nb.className = "notify";
     const pref = { on: true, alvo: "jornada", ...(lsGet("aviso") || {}) }; // marcado por padrão
 if (!("Notification" in window)) { nb.textContent = "Este navegador não mostra avisos."; }
