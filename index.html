@@ -235,7 +235,7 @@ footer{color:var(--muted);font-size:12.5px;display:flex;flex-wrap:wrap;gap:6px 1
 .wrap>.extrato{grid-column:1;grid-row:1 / span 20}
 .wrap>.panels{grid-column:3;grid-row:1 / span 20;display:grid;grid-template-columns:1fr;gap:14px}
 .wrap>.extrato,.wrap>.panels{position:sticky;top:calc(var(--bandH,55px) + 10px);max-height:calc(100vh - var(--bandH,55px) - 20px);overflow:auto;scrollbar-width:thin}
-.wrap>footer{grid-column:1 / -1}
+.wrap>footer{grid-column:2}
 .panels .panel{padding:16px}
 .tablebox table{min-width:0;width:100%}
 .tablebox th,.tablebox td{padding-inline:3px}
@@ -260,6 +260,9 @@ footer{color:var(--muted);font-size:12.5px;display:flex;flex-wrap:wrap;gap:6px 1
 /* Telas largas, versão compacta: as laterais cabem inteiras na tela, sem rolagem própria */
 @media (min-width:1180px){
 .wrap{padding-block:12px 24px;row-gap:12px}
+.bandin{padding-block:6px}
+.brandbar .mk{width:24px;height:24px}
+.wordmark{font-size:15px}
 .wrap>.extrato{padding:10px 14px;gap:6px}
 .extrato .exhead{gap:4px}
 .extrato .eyebrow{font-size:10.5px}
@@ -390,7 +393,7 @@ footer{color:var(--muted);font-size:12.5px;display:flex;flex-wrap:wrap;gap:6px 1
   <div class="panels">
     <section class="card panel" id="importPanel">
       <h2>Importar da IntraALMG</h2>
-      <p>Abra a <a href="https://intranet-integracao.almg.gov.br/frequencia/freq_ef.do" target="_blank" rel="noopener">Apuração de Frequência</a> (abre só a tabela, sem o menu da IntraALMG; é preciso estar logado), aperte Ctrl+A, copie e cole aqui. Entram os horários, as ocorrências (férias, licenças, convocações, feriados), o saldo anterior do extrato e a diferença oficial do mês, para conferir com o cálculo daqui. A tabela das <a href="https://intra.almg.gov.br/meus-dados/frequencia-e-jornada-de-trabalho/marcacoes-de-ponto/index.html" target="_blank" rel="noopener">Marcações de Ponto</a> também funciona, só com os horários.</p>
+      <p>Abra a <a href="https://intranet-integracao.almg.gov.br/frequencia/freq_ef.do" target="_blank" rel="noopener">Apuração de Frequência</a> (logado na IntraALMG), aperte Ctrl+A, copie e cole aqui. Entram horários, ocorrências, saldo anterior e a diferença oficial do mês. As <a href="https://intra.almg.gov.br/meus-dados/frequencia-e-jornada-de-trabalho/marcacoes-de-ponto/index.html" target="_blank" rel="noopener">Marcações de Ponto</a> também servem, só com os horários.</p>
       <textarea id="paste" placeholder="01&#9;qui&#9;&#9;&#9;8:00&#9;Férias regulamentares&#10;06&#9;ter&#9;10:10&#10;21:21&#9;10:00&#9;10:00&#9;Convocação para execução de jornada extraordinária&#10;…"></textarea>
       <div class="row">
         <button class="primary" id="doImport">Preencher o mês</button>
@@ -696,7 +699,7 @@ footer{color:var(--muted);font-size:12.5px;display:flex;flex-wrap:wrap;gap:6px 1
     else tally.appendChild(el("span", "chip none", "IntraALMG ainda não importada"));
     tally.appendChild(el("span", "chip mine", "✦ " + nMine + " só aqui"));
     $("exSub").textContent = temOf
-      ? "Calculado aqui e conferido com a IntraALMG, importada em " + (of.em || "").split("-").reverse().join("/") + ". Em azul, o que a IntraALMG não mostra."
+      ? "Conferido com a IntraALMG de " + (of.em || "").split("-").reverse().join("/") + ". Em azul, o que ela não mostra."
       : "Os mesmos números da IntraALMG, calculados aqui. Importe a Apuração para conferir lado a lado. Em azul, o que a IntraALMG não mostra.";
     const y = view.y;
     imparesAno(y).then(n => {
