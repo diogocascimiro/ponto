@@ -336,6 +336,24 @@ footer{color:var(--muted);font-size:12.5px;display:flex;flex-wrap:wrap;gap:6px 1
 /* rolando a página: some a troca de mês (volta quando estiver vendo outro mês) */
 body.stuck header.top .hoje:not(.away) ~ .month{display:none}
 }
+/* Telas largas: cabeçalho numa linha e linhas da tabela mais baixas, para a página caber na tela */
+@media (min-width:1180px){
+header.top{flex-wrap:nowrap;align-items:center;gap:8px}
+.brand h1{font-size:26px}
+.apptitle{gap:10px}
+.apptitle .tile{width:40px;height:40px}
+.apptitle .sub{font-size:12px}
+.hoje .d{font-size:14.5px}
+.month output{font-size:15px;min-width:8.2em}
+.month button.icon{width:30px;height:30px;font-size:15px}
+.tablebox th{padding-block:5px}
+.tablebox td{padding-block:1px}
+.tablebox td.day{font-size:13px}
+.tablebox td.wd{font-size:12px}
+.tablebox td.wd .hol{font-size:10px;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:6.5em}
+.tablebox td input.t{padding-block:2px;font-size:12.5px;line-height:1.3}
+.tablebox td select{padding-block:1px;font-size:12px}
+}
 </style>
 
 </head>
