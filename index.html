@@ -257,6 +257,54 @@ footer{color:var(--muted);font-size:12.5px;display:flex;flex-wrap:wrap;gap:6px 1
 .extrato .exlist li{grid-template-columns:minmax(0,1fr) auto;gap:6px}
 .extrato .exlist li .vals{display:flex;flex-direction:column;align-items:flex-end;gap:3px}
 }
+/* Telas largas, versão compacta: as laterais cabem inteiras na tela, sem rolagem própria */
+@media (min-width:1180px){
+.wrap{padding-block:12px 24px;row-gap:12px}
+.wrap>.extrato{padding:10px 14px;gap:6px}
+.extrato .exhead{gap:4px}
+.extrato .eyebrow{font-size:10.5px}
+.extrato h2{font-size:19px;margin:0}
+.extrato #exSub{font-size:11px;line-height:1.3}
+.extrato .tally .chip{font-size:11px;padding:1px 7px}
+.extrato .conta,.extrato .meter,.extrato .excols{margin-top:0}
+.extrato .conta{gap:5px}
+.extrato .conta .tile{padding:6px 9px;gap:0;display:grid;grid-template-columns:1fr auto;align-items:center}
+.extrato .conta .tile .k{grid-column:1 / -1;font-size:9.5px}
+.extrato .conta .v{font-size:17px}
+.extrato .conta .chip.ok,.extrato .exlist .chip.ok{font-size:0;padding:1px 4px;white-space:nowrap}
+.extrato .conta .chip.ok::before,.extrato .exlist .chip.ok::before{content:"✓";font-size:10.5px}
+.extrato .meter .bar{height:8px}
+.extrato .meter .lbl{font-size:10.5px;line-height:1.3;display:flex;flex-wrap:wrap;justify-content:space-between;gap:0 8px}
+.extrato .excols{gap:6px}
+.extrato .exbox h3{font-size:13px;margin:0 0 3px}
+.extrato .exlist li{padding:1px 6px;column-gap:4px;font-size:11.5px;min-height:0;align-items:center}
+.extrato .exlist li .lb{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:-.2px}
+.extrato .exlist li .lb small{display:none}
+.extrato .exlist li .vals{flex-direction:row;align-items:center;gap:3px}
+.extrato .exlist li .v{font-size:12px}
+.extrato .exlist .chip{font-size:10.5px;padding:0 5px}
+.extrato .mineh{font-size:10px;margin:4px 0 2px}
+.wrap>.panels{gap:10px}
+.panels .panel{padding:12px 14px}
+.panels .panel h2{font-size:16px;margin:0 0 6px}
+.panels .panel p{font-size:11.5px;line-height:1.3;margin:0 0 6px}
+.panels #paste{height:48px;min-height:0;font-size:11px}
+.panels .panel .row{gap:6px}
+.panels .panel button{padding:5px 10px;font-size:13px}
+.panels .fields{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.panels .fields label{font-size:11.5px;gap:2px}
+.panels .fields input{padding:4px 8px;font-size:13px}
+.panels .legend{font-size:11px;line-height:1.3;gap:4px;margin-top:8px}
+.panels .legend .pill{font-size:10px;padding:0 5px}
+.panels #calNote{display:none}
+.panels #storeMsg{font-size:11.5px}
+.panels .backup{margin-top:8px;padding-top:8px}
+.panels .backup h3{font-size:14px;margin:0 0 4px}
+.panels .backup p{display:none}
+.tablebox td{padding-block:2px}
+.tablebox td input.t,.tablebox td select{padding-block:3px}
+.tablebox th{padding-block:7px}
+}
 </style>
 
 </head>
