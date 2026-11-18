@@ -332,7 +332,8 @@ footer{color:var(--muted);font-size:12.5px;display:flex;flex-wrap:wrap;gap:6px 1
 .stat.hero .v{font-size:34px}
 .stat .s{font-size:11px;line-height:1.3}
 .stat .oficial{font-size:10px;display:block}
-.stat .oficial.ok{white-space:nowrap}
+.stat .oficial.ok,.stat .oficial.diff{white-space:nowrap}
+#sMesSub .oficial:not(.ok):not(.diff){display:none}
 /* rolando a página: some a troca de mês (volta quando estiver vendo outro mês) */
 body.stuck header.top .hoje:not(.away) ~ .month{display:none}
 }
@@ -823,7 +824,7 @@ header.top{flex-wrap:nowrap;align-items:center;gap:8px}
     if (of && of.dif != null) {
       const ok = of.dif === k.saldoMes;
       const tag = document.createElement("span"); tag.className = "oficial " + (ok ? "ok" : "diff");
-      tag.textContent = "IntraALMG: " + (fmt(of.dif, true) || "0:00") + (ok ? " ✓" : (k.semReg && of.dif === k.saldoMes + k.semReg) ? " · confere com o dia ainda sem regularizar" : " · diferente do calculado");
+      tag.textContent = "IntraALMG: " + (fmt(of.dif, true) || "0:00") + (ok ? " ✓" : (k.semReg && of.dif === k.saldoMes + k.semReg) ? " · confere com o dia ainda sem regularizar" : " (difere)");
       $("sMesSub").appendChild(document.createElement("br")); $("sMesSub").appendChild(tag);
     }
     if (k.semReg) {
