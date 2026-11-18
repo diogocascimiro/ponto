@@ -232,8 +232,8 @@ footer{color:var(--muted);font-size:12.5px;display:flex;flex-wrap:wrap;gap:6px 1
 .bandin{max-width:none}
 .wrap{max-width:none;grid-template-columns:minmax(290px,380px) minmax(690px,800px) minmax(290px,380px);justify-content:center;column-gap:16px;align-items:start}
 .wrap>*{grid-column:2}
-.wrap>.extrato{grid-column:1;grid-row:1 / span 20}
-.wrap>.panels{grid-column:3;grid-row:1 / span 20;display:grid;grid-template-columns:1fr;gap:14px}
+.wrap>.extrato{grid-column:1;grid-row:1 / span 3}
+.wrap>.panels{grid-column:3;grid-row:1 / span 3;display:grid;grid-template-columns:1fr;gap:14px}
 .wrap>.extrato,.wrap>.panels{position:sticky;top:calc(var(--bandH,55px) + 10px);max-height:calc(100vh - var(--bandH,55px) - 20px);overflow:auto;scrollbar-width:thin}
 .wrap>footer{grid-column:2;font-size:11.5px;flex-direction:column;gap:2px}
 .wrap>footer a{white-space:nowrap}
@@ -346,6 +346,7 @@ header.top{flex-wrap:nowrap;align-items:center;gap:8px}
 .hoje .d{font-size:14.5px}
 .month output{font-size:15px;min-width:8.2em}
 .month button.icon{width:30px;height:30px;font-size:15px}
+.pin,body.stuck .pin{padding-bottom:2px}
 .tablebox th{padding-block:5px}
 .tablebox td{padding-block:1px}
 .tablebox td.day{font-size:13px}
