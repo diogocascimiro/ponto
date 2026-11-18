@@ -347,6 +347,7 @@ header.top{flex-wrap:nowrap;align-items:center;gap:8px}
 .month output{font-size:15px;min-width:8.2em}
 .month button.icon{width:30px;height:30px;font-size:15px}
 .pin,body.stuck .pin{padding-bottom:2px}
+.wrap>.panels>.ramais{font-size:11.5px;color:var(--muted);text-align:center;flex:none}
 .tablebox th{padding-block:5px}
 .tablebox td{padding-block:1px}
 .tablebox td.day{font-size:13px}
@@ -1207,7 +1208,9 @@ const tb = $("todayBox"), pa = document.querySelector(".panels"), ex = document.
 if (!tb || !pa || !ex) return;
 const mark = document.createComment("todayBox"); tb.before(mark);
 const fit = () => { pa.style.height = mq.matches ? ex.offsetHeight + "px" : ""; };
-const place = () => { if (mq.matches) pa.prepend(tb); else mark.after(tb); fit(); };
+const fs = document.querySelector("footer > span:last-child"), fmark = document.createComment("ramais");
+if (fs) { fs.classList.add("ramais"); fs.before(fmark); }
+const place = () => { if (mq.matches) { pa.prepend(tb); if (fs) pa.append(fs); } else { mark.after(tb); if (fs) fmark.after(fs); } fit(); };
 mq.addEventListener("change", place); place();
 if ("ResizeObserver" in window) new ResizeObserver(fit).observe(ex);
 })();
