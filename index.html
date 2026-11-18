@@ -824,7 +824,7 @@ header.top{flex-wrap:nowrap;align-items:center;gap:8px}
     if (of && of.dif != null) {
       const ok = of.dif === k.saldoMes;
       const tag = document.createElement("span"); tag.className = "oficial " + (ok ? "ok" : "diff");
-      tag.textContent = "IntraALMG: " + (fmt(of.dif, true) || "0:00") + (ok ? " ✓" : (k.semReg && of.dif === k.saldoMes + k.semReg) ? " · confere com o dia ainda sem regularizar" : " (difere)");
+      tag.textContent = "IntraALMG: " + (fmt(of.dif, true) || "0:00") + (ok ? " ✓" : (k.semReg && of.dif === k.saldoMes + k.semReg) ? " · confere com o dia ainda sem regularizar" : " ✗");
       $("sMesSub").appendChild(document.createElement("br")); $("sMesSub").appendChild(tag);
     }
     if (k.semReg) {
