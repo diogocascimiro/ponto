@@ -460,13 +460,13 @@ header.top{flex-wrap:nowrap;align-items:center;gap:8px}
         <label for="fAnterior">Saldo anterior (extrato)<input id="fAnterior" inputmode="text" placeholder="-36:21"></label>
         <label for="fJornada">Jornada diária<input id="fJornada" placeholder="8:00"></label>
         <label for="fMax">Máximo apurado/dia<input id="fMax" placeholder="10:00"></label>
-        <label for="fMin">Mínimo/dia<input id="fMin" placeholder="6:00"></label>
+        <label for="fMin">Mínimo/dia<input id="fMin" placeholder="4:00"></label>
       </div>
       <div class="legend">
         <div><span class="pill c78">78</span>entrada antes de 7:30 ou saída depois de 19:00</div>
         <div><span class="pill cx">63 · 70 · 71 · 51</span>Jornada · Férias · Eleitoral · Folga</div>
         <div id="calNote"></div>
-        <div id="regraNote">Acima de 7h registradas, desconta 1h de intervalo (ou o intervalo marcado, se for maior). Entre 6h e 7h, conta 6h. Depois das 22h, cada hora conta 20% a mais (hora noturna).</div>
+        <div id="regraNote">Até 6h registradas, conta o que foi feito (abaixo do mínimo, o dia não conta). Entre 6h e 7h, conta 6h. Acima de 7h, desconta 1h de intervalo (ou o intervalo marcado, se for maior). Depois das 22h, cada hora conta 20% a mais (hora noturna).</div>
       </div>
       <span class="msg" id="storeMsg"></span>
       <button id="openGuide" type="button">Ver o guia de primeiros passos</button>
@@ -539,7 +539,7 @@ header.top{flex-wrap:nowrap;align-items:center;gap:8px}
   // ---------- estado ----------
   let now = new Date();
   let view = { y: now.getFullYear(), m: now.getMonth() };
-  let cfg = { jornada: 480, max: 600, min: 360, limiar: 420 };
+  let cfg = { jornada: 480, max: 600, min: 240, limiar: 420 }; // mínimo de 4h: art. 12 da DLB 2.761/2020 (redação da DLB 2.893/2026)
   // Jornada reduzida (7h ou 6h): créditos sem convocação, valem só dentro do mês; intervalo de 1h acima de 6h.
   const reduzida = () => cfg.jornada < 480;
   // Sem convocação, a IntraALMG só apura dentro da janela 7:30–19:00 até a regularização (código 78).
@@ -549,7 +549,7 @@ header.top{flex-wrap:nowrap;align-items:center;gap:8px}
     if (e >= 450 && end <= 1140) return null;
     const reg = Math.min(end, 1140) - Math.max(e, 450);
     if (reg <= 0) return 0;
-    return reg < cfg.min ? 0 : (reg <= cfg.limiar ? cfg.min : Math.min(reg - 60, cfg.max));
+    return reg < cfg.min ? 0 : (reg <= 360 ? reg : (reg <= cfg.limiar ? 360 : Math.min(reg - 60, cfg.max)));
   }
   let month = null;          // { dias: {d:{e,ii,if,s,oc}}, anterior }
   let example = false;
@@ -582,7 +582,7 @@ header.top{flex-wrap:nowrap;align-items:center;gap:8px}
       } else {
         const base = reg > cfg.limiar ? 60 : 0;
         int = (ii != null && fi != null && s != null) ? Math.max(fi - ii, base) : base;
-        if (oc !== "Licença") apur = reg < cfg.min ? 0 : (reg <= cfg.limiar ? cfg.min : Math.min(reg - int, cfg.max));
+        if (oc !== "Licença") apur = reg < cfg.min ? 0 : (reg <= 360 ? reg : (reg <= cfg.limiar ? 360 : Math.min(reg - int, cfg.max)));
       }
       // Hora noturna (art. 40 da DLB 2.761/2020): o tempo apurado entre 22h e 5h conta 20% a mais
       if (apur > 0) {
@@ -771,7 +771,7 @@ header.top{flex-wrap:nowrap;align-items:center;gap:8px}
     tickHoje();
     $("regraNote").textContent = reduzida()
       ? "Jornada reduzida: até 6h registradas conta o que foi feito; entre 6h e 7h, conta 6h; acima de 7h, desconta 1h de intervalo (máximo de " + fmt(cfg.max).replace(":00", "h") + "). Minutos a mais não dependem de convocação, e dá para compensar com um dia mais curto, mas o saldo vale só dentro do mês: nada passa para o mês seguinte."
-      : "Acima de 7h registradas, desconta 1h de intervalo (ou o intervalo marcado, se for maior). Entre 6h e 7h, conta 6h. Depois das 22h, cada hora conta 20% a mais (hora noturna).";
+      : "Até 6h registradas, conta o que foi feito (abaixo do mínimo, o dia não conta). Entre 6h e 7h, conta 6h. Acima de 7h, desconta 1h de intervalo (ou o intervalo marcado, se for maior). Depois das 22h, cada hora conta 20% a mais (hora noturna).";
     $("calNote").textContent = hasCal() ? "Feriados e recessos de " + view.y + " já vêm marcados pelo calendário oficial da ALMG (Portaria 67/2025). Dá para trocar a ocorrência de qualquer dia." : "O calendário oficial de " + view.y + " ainda não está no site. Marque feriados e recessos à mão.";
     $("exampleNotice").hidden = !example;
     const k = compute();
@@ -849,14 +849,14 @@ header.top{flex-wrap:nowrap;align-items:center;gap:8px}
     const box = $("todayBox"); const t = k.rows.find(r => r.today);
     if (!t || t.r.e == null || t.r.s != null) { box.hidden = true; return; }
     const e = t.r.e;
-    const need = m => m <= (reduzida() ? 360 : cfg.min) ? m : m + 60; // até o mínimo não há intervalo; acima, soma 1h
+    const need = m => m <= 360 ? m : m + 60; // até o mínimo não há intervalo; acima, soma 1h
     const sMax = e + need(cfg.max), sJor = e + need(cfg.jornada), sMin = e + cfg.min;
     box.textContent = "";
     const add = (cls, txt) => { const s = document.createElement("span"); s.className = cls; s.textContent = txt; box.appendChild(s); };
     const hJ = fmt(cfg.jornada).replace(":00", "h"), hM = fmt(cfg.max).replace(":00", "h");
     add("muted", "Entrou " + clock(e) + " · " + hJ + " às ");
     add("big", clock(sJor));
-    add("muted", "· " + hM + " às " + clock(sMax) + (sMax > 1140 && !reduzida() ? " (cód. 78)" : "") + (reduzida() ? "" : " · mín. 6h às " + clock(sMin)));
+    add("muted", "· " + hM + " às " + clock(sMax) + (sMax > 1140 && !reduzida() ? " (cód. 78)" : "") + (reduzida() ? "" : " · mín. " + fmt(cfg.min).replace(":00", "h") + " às " + clock(sMin)));
     const nb = document.createElement("div"); nb.className = "notify";
     const pref = { on: true, alvo: "jornada", ...(lsGet("aviso") || {}) }; // marcado por padrão
 if (!("Notification" in window)) { nb.textContent = "Este navegador não mostra avisos."; }
@@ -1070,6 +1070,8 @@ nb.appendChild(lbl);
     if (mode === "db") { try { const s = await db.doc("data/users/" + uid + "/config").get(); c = s.exists ? s.data() : null; } catch {} }
     else c = lsGet("config");
     if (c) cfg = { ...cfg, ...c };
+    // nov/2026: o mínimo diário passou a ser 4h; quem estava no mínimo antigo (6h) passa para 4h uma vez
+    if (c && !c.min4) { if (c.min === 360) cfg.min = 240; cfg.min4 = true; }
   }
 
   let saveTimer = null, saving = Promise.resolve();
