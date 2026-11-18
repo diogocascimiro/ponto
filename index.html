@@ -232,8 +232,8 @@ footer{color:var(--muted);font-size:12.5px;display:flex;flex-wrap:wrap;gap:6px 1
 .bandin{max-width:none}
 .wrap{max-width:none;grid-template-columns:minmax(290px,380px) minmax(690px,800px) minmax(290px,380px);justify-content:center;column-gap:16px;align-items:start}
 .wrap>*{grid-column:2}
-.wrap>.extrato{grid-column:1;grid-row:1 / span 3}
-.wrap>.panels{grid-column:3;grid-row:1 / span 3;display:grid;grid-template-columns:1fr;gap:14px}
+.wrap>.extrato{grid-column:1;grid-row:1 / span 2}
+.wrap>.panels{grid-column:3;grid-row:1 / span 2;display:grid;grid-template-columns:1fr;gap:14px}
 .wrap>.extrato,.wrap>.panels{position:sticky;top:calc(var(--bandH,55px) + 10px);max-height:calc(100vh - var(--bandH,55px) - 20px);overflow:auto;scrollbar-width:thin}
 .wrap>footer{grid-column:2;font-size:11.5px;flex-direction:column;gap:2px}
 .wrap>footer a{white-space:nowrap}
@@ -347,6 +347,8 @@ header.top{flex-wrap:nowrap;align-items:center;gap:8px}
 .month output{font-size:15px;min-width:8.2em}
 .month button.icon{width:30px;height:30px;font-size:15px}
 .pin,body.stuck .pin{padding-bottom:2px}
+.wrap>footer{display:none}
+.wrap>.extrato>.confira{font-size:11.5px;color:var(--muted);text-align:center}
 .wrap>.panels>.ramais{font-size:11.5px;color:var(--muted);text-align:center;flex:none}
 .tablebox th{padding-block:5px}
 .tablebox td{padding-block:1px}
@@ -479,7 +481,8 @@ header.top{flex-wrap:nowrap;align-items:center;gap:8px}
   </div>
 
   <footer>
-    <span>Iniciativa independente de um servidor da ALMG, sem vínculo oficial com a Assembleia. Confira sempre a <a href="https://intranet-integracao.almg.gov.br/frequencia/freq_ef.do" target="_blank" rel="noopener">Apuração de Frequência</a>.</span>
+    <span>Iniciativa independente de um servidor da ALMG, sem vínculo oficial com a Assembleia.</span>
+    <span class="confira">Confira sempre a <a href="https://intranet-integracao.almg.gov.br/frequencia/freq_ef.do" target="_blank" rel="noopener">Apuração de Frequência</a>.</span>
     <span>Ramal freq. 7468 · Ramal reg. 7144 · <a href="https://docs.google.com/forms/d/1UQ4VKym3mkc8dA4Iq3LDcL_bglBevWpdvEQcwGpEjKQ/viewform" target="_blank" rel="noopener">Sugestões</a></span>
   </footer>
 </div>
@@ -1210,7 +1213,9 @@ const mark = document.createComment("todayBox"); tb.before(mark);
 const fit = () => { pa.style.height = mq.matches ? ex.offsetHeight + "px" : ""; };
 const fs = document.querySelector("footer > span:last-child"), fmark = document.createComment("ramais");
 if (fs) { fs.classList.add("ramais"); fs.before(fmark); }
-const place = () => { if (mq.matches) { pa.prepend(tb); if (fs) pa.append(fs); } else { mark.after(tb); if (fs) fmark.after(fs); } fit(); };
+const cf = document.querySelector("footer > .confira"), cmark = document.createComment("confira");
+if (cf) cf.before(cmark);
+const place = () => { if (mq.matches) { pa.prepend(tb); if (fs) pa.append(fs); if (cf) ex.append(cf); } else { mark.after(tb); if (fs) fmark.after(fs); if (cf) cmark.after(cf); } fit(); };
 mq.addEventListener("change", place); place();
 if ("ResizeObserver" in window) new ResizeObserver(fit).observe(ex);
 })();
