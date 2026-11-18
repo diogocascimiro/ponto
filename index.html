@@ -223,6 +223,34 @@ td.num.diff{color:var(--warn);font-weight:600;text-decoration:underline dotted;c
 .sit{display:block;font-family:var(--f-body);font-size:10.5px;color:var(--warn);white-space:normal;max-width:12em;line-height:1.2;margin:2px auto 0}
 footer{color:var(--muted);font-size:12.5px;display:flex;flex-wrap:wrap;gap:6px 16px;justify-content:space-between}
 @media (prefers-reduced-motion:no-preference){tr{transition:background .2s}}
+/* Telas largas: resumo do mês à esquerda, tabela no meio, importar e ajustes à direita */
+@media (min-width:1180px){
+.bandin{max-width:none}
+.wrap{max-width:none;grid-template-columns:265px minmax(0,1fr) 265px;column-gap:16px;align-items:start}
+.wrap>*{grid-column:2}
+.wrap>.extrato{grid-column:1;grid-row:1 / span 20}
+.wrap>.panels{grid-column:3;grid-row:1 / span 20;display:grid;grid-template-columns:1fr;gap:14px}
+.wrap>.extrato,.wrap>.panels{position:sticky;top:calc(var(--bandH,55px) + 10px);max-height:calc(100vh - var(--bandH,55px) - 20px);overflow:auto;scrollbar-width:thin}
+.wrap>footer{grid-column:1 / -1}
+.panels .panel{padding:16px}
+.tablebox table{min-width:0;width:100%}
+.tablebox th,.tablebox td{padding-inline:4px}
+.tablebox th{font-size:10px;letter-spacing:.02em}
+.tablebox td.num,.tablebox td.code{font-size:13px}
+.tablebox td input.t{width:52px;min-width:0;padding-inline:2px;text-align:center}
+.tablebox td select{width:auto;max-width:104px}
+.extrato .exhead{display:grid;gap:8px}
+.extrato h2{font-size:22px}
+.extrato .tally{display:flex;flex-wrap:wrap;gap:6px}
+.extrato .conta{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.extrato .conta .op{display:none}
+.extrato .conta .tile{padding:10px}
+.extrato .conta .v{font-size:20px}
+.extrato .conta .chip{white-space:nowrap;font-size:11px;padding:2px 7px}
+.extrato .excols{display:grid;grid-template-columns:1fr;gap:12px}
+.extrato .exlist{font-size:13px}
+.extrato .exlist li{grid-template-columns:minmax(0,1fr) auto;gap:6px}
+}
 </style>
 
 </head>
