@@ -258,6 +258,20 @@ footer{color:var(--muted);font-size:12.5px;display:flex;flex-wrap:wrap;gap:6px 1
 .extrato .exlist li{grid-template-columns:minmax(0,1fr) auto;gap:6px}
 .extrato .exlist li .vals{display:flex;flex-direction:column;align-items:flex-end;gap:3px}
 }
+/* Telas largas: aviso de hoje no alto da lateral direita; a caixa de colar ocupa o que sobra */
+@media (min-width:1180px){
+.wrap>.panels{display:flex;flex-direction:column;overflow-x:hidden}
+.panels #importPanel{flex:1;display:flex;flex-direction:column}
+.panels #importPanel #paste{flex:1;height:auto;min-height:48px}
+.panels .today{display:block;padding:10px 14px;border-radius:14px;line-height:1.5}
+.panels .today .muted{font-size:12.5px}
+.panels .today .big{font-size:22px;margin:0 2px;vertical-align:-2px}
+.panels .today .notify{display:flex;flex-wrap:wrap;align-items:center;margin:6px 0 0;gap:4px 8px}
+.panels .today .notify .chk{font-size:12.5px;white-space:nowrap}
+.panels .today .notify select{font-size:12.5px;padding:3px 6px}
+.panels .today .notify .muted{display:none}
+.panels .legend{display:none}
+}
 /* Telas largas, versão compacta: as laterais cabem inteiras na tela, sem rolagem própria */
 @media (min-width:1180px){
 .wrap{padding-block:12px 24px;row-gap:12px}
@@ -1154,7 +1168,19 @@ nb.appendChild(lbl);
   }
   $("openGuide") && $("openGuide").addEventListener("click", openGuide);
 
-  // ---------- cabeçalho fixo ----------
+  // ---------- telas largas: aviso de hoje na lateral direita, laterais com a mesma altura ----------
+(function(){
+const mq = matchMedia("(min-width:1180px)");
+const tb = $("todayBox"), pa = document.querySelector(".panels"), ex = document.querySelector(".extrato");
+if (!tb || !pa || !ex) return;
+const mark = document.createComment("todayBox"); tb.before(mark);
+const fit = () => { pa.style.height = mq.matches ? ex.offsetHeight + "px" : ""; };
+const place = () => { if (mq.matches) pa.prepend(tb); else mark.after(tb); fit(); };
+mq.addEventListener("change", place); place();
+if ("ResizeObserver" in window) new ResizeObserver(fit).observe(ex);
+})();
+
+// ---------- cabeçalho fixo ----------
   (function(){
     const band = document.querySelector(".band");
     const setH = () => { if (band) document.documentElement.style.setProperty("--bandH", band.offsetHeight + "px"); };
