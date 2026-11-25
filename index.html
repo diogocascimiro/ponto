@@ -104,6 +104,9 @@ tr.missing td.day{color:var(--bad)}
 .notify .muted{font-size:12.5px}
 .notify .chk{display:inline-flex;align-items:center;gap:6px;font-size:13.5px;cursor:pointer}
 .notify .chk input{width:16px;height:16px;accent-color:var(--accent);margin:0}
+.notify .agenda{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:500;text-decoration:none;color:var(--accent);border:1px solid var(--line);background:var(--paper);border-radius:8px;padding:5px 10px;white-space:nowrap;transition:border-color .15s,background .15s}
+.notify .agenda:hover,.notify .agenda:focus-visible{border-color:var(--accent);background:var(--accent-soft)}
+.notify .agenda svg{width:14px;height:14px;flex:none}
 dialog#guide{border:0;border-radius:18px;padding:0;max-width:min(520px,calc(100vw - 32px));background:var(--paper);color:var(--ink);box-shadow:0 30px 60px -20px rgba(0,0,0,.5)}
 dialog#guide::backdrop{background:rgba(20,10,12,.55)}
 .guide{padding:24px;display:grid;gap:14px}
@@ -270,6 +273,7 @@ footer{color:var(--muted);font-size:12.5px;display:flex;flex-wrap:wrap;gap:6px 1
 .panels .today .notify .chk{font-size:12.5px;white-space:nowrap}
 .panels .today .notify select{font-size:12.5px;padding:3px 6px}
 .panels .today .notify .muted{display:none}
+.panels .today .notify .agenda{font-size:12.5px;padding:3px 8px}
 .panels .legend{display:none}
 }
 /* Telas largas, versão compacta: as laterais cabem inteiras na tela, sem rolagem própria */
@@ -893,6 +897,20 @@ lbl.textContent = "Os avisos estão bloqueados no navegador. Libere nas permiss�
 } else lbl.textContent = pref.on ? "Funciona com esta página aberta, mesmo em outra aba." : "";
 nb.appendChild(lbl);
 }
+    // Lembrete no celular: abre o Google Agenda com o evento da saída já preenchido (o site não tem login, então quem salva é a pessoa).
+    {
+      const alvo = ({ on: true, alvo: "jornada", ...(lsGet("aviso") || {}) }).alvo === "max" ? sMax : sJor;
+      const d0 = new Date(); d0.setHours(0, alvo, 0, 0); const d1 = new Date(d0.getTime() + 10 * 60000);
+      const p2 = n => String(n).padStart(2, "0");
+      const st = d => d.getFullYear() + p2(d.getMonth() + 1) + p2(d.getDate()) + "T" + p2(d.getHours()) + p2(d.getMinutes()) + "00";
+      const ag = document.createElement("a"); ag.className = "agenda"; ag.target = "_blank"; ag.rel = "noopener";
+      ag.href = "https://calendar.google.com/calendar/render?action=TEMPLATE&text=" + encodeURIComponent("Sair às " + clock(alvo))
+        + "&dates=" + st(d0) + "/" + st(d1) + "&ctz=America/Sao_Paulo&details=" + encodeURIComponent("Entrada " + clock(e) + " · saída às " + clock(alvo) + " · ponto.almg.digital");
+      ag.title = "Abre o Google Agenda com a saída das " + clock(alvo) + " já preenchida; salve na sua agenda pessoal para o lembrete chegar no celular";
+      ag.innerHTML = '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="3" width="12" height="11" rx="2"/><path d="M2 6.5h12M5.5 1.5v3M10.5 1.5v3M8 8.6v2.8M6.6 10h2.8"/></svg>';
+      ag.append("Pôr na Agenda");
+      nb.appendChild(ag);
+    }
     box.appendChild(nb);
     box.hidden = false;
     const p2 = { on: true, alvo: "jornada", ...(lsGet("aviso") || {}) };
