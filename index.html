@@ -954,7 +954,8 @@ nb.appendChild(lbl);
       return n;
     }
     starts.forEach((s, i) => {
-      const chunk = txt.slice(s.body, i + 1 < starts.length ? starts[i + 1].at : txt.length).replace(/--\s*Selecione um c[óo]digo/gi, "");
+      const raw = txt.slice(s.body, i + 1 < starts.length ? starts[i + 1].at : txt.length);
+      const chunk = raw.replace(/--\s*Selecione um c[óo]digo/gi, "");
       const fields = chunk.split("\t");
       const punches = (fields[0] || "").match(/\b\d{1,2}:\d{2}\b/g) || [];
       const times = punches.map(parseT).filter(isClock);
@@ -963,6 +964,13 @@ nb.appendChild(lbl);
       if (apuracao) { // colunas da Apuração: marcações, registrada, apurada, ocorrência, validação, situação
         const sit = /fora d[oa]|[íi]mpar|inconsist|aus[êe]ncia de marca/i; // avisos da IntraALMG na coluna de ocorrência
         oc = letras(fields[3]) && !sit.test(fields[3]) ? (ocFrom(fields[3]) || null) : null;
+        // Dia sem marcação e sem ocorrência reconhecida: vale o código já lançado na Validação (o texto antes do seletor),
+        // ex. "51 - Compensação banco de horas", aguardando aprovação ou aprovada. Recusada não conta.
+        if (!oc && !times.length) {
+          const val = (raw.split("\t")[4] || "").split(/--\s*Selecione/i)[0];
+          const recusada = /reprov|indefer|recus|negad|cancel/i.test(fields[5] || "");
+          if (!recusada && /^\s*51\s*-|compensa[çc][ãa]o\s+(?:d[eo]\s+)?banco/im.test(val)) oc = "Folga";
+        }
         info = fields.slice(sit.test(fields[3] || "") ? 3 : 4).map(f => f.split("\n").filter(l => !/^\s*\d+\s*-\s/.test(l)).join(" ").replace(/\s+/g, " ").trim()).filter(letras).join(" · ");
         const ap = (fields[2] || "").match(/\d{1,2}:\d{2}/); ofAp = ap ? parseT(ap[0]) : null;
         if (applyDay(s.d, times, oc, true)) { const r = month.dias[s.d]; if (r) { if (info) r.info = info; else delete r.info; if (ofAp != null) r.ofAp = ofAp; else delete r.ofAp; } n++; }
