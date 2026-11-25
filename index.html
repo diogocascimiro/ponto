@@ -815,7 +815,11 @@ header.top{flex-wrap:nowrap;align-items:center;gap:8px}
       if (row.c.noturno) apc.title = "Inclui +" + row.c.noturno + " min de hora noturna (20% sobre o tempo depois das 22h, art. 40 da DLB 2.761/2020)";
       const ofAp = row.r.ofAp;
       if (ofAp != null && row.c.apur != null && ofAp !== row.c.apur) { apc.classList.add("diff"); apc.title = "A IntraALMG apurou " + fmt(ofAp) + " neste dia"; }
-      if (row.r.info) { const sp = document.createElement("span"); sp.className = "sit"; sp.textContent = row.r.info; codeCell.appendChild(sp); }
+      if (row.r.info) {
+        // "Aprovada" não pede ação: fica só na dica do código, sem aumentar a linha
+        if (/^aprovad[ao]$/i.test(row.r.info) && codeCell.firstChild) { if (!codeCell.firstChild.title) codeCell.firstChild.title = row.r.info + " na IntraALMG"; }
+        else { const sp = document.createElement("span"); sp.className = "sit"; sp.textContent = row.r.info; codeCell.appendChild(sp); }
+      }
       const sc = td("num saldo", fmt(row.saldo, true)); signClass(sc, row.saldo ?? 0);
       tb.appendChild(tr);
     }
@@ -971,7 +975,7 @@ nb.appendChild(lbl);
           const recusada = /reprov|indefer|recus|negad|cancel/i.test(fields[5] || "");
           if (!recusada && /^\s*51\s*-|compensa[çc][ãa]o\s+(?:d[eo]\s+)?banco/im.test(val)) oc = "Folga";
         }
-        info = fields.slice(sit.test(fields[3] || "") ? 3 : 4).map(f => f.split("\n").filter(l => !/^\s*\d+\s*-\s/.test(l)).join(" ").replace(/\s+/g, " ").trim()).filter(letras).join(" · ");
+        info = raw.split("\t").slice(sit.test(fields[3] || "") ? 3 : 4).map(f => f.split(/--\s*Selecione/i)[0].split("\n").filter(l => !/^\s*\d+\s*-\s/.test(l)).join(" ").replace(/\s+/g, " ").trim()).filter(letras).join(" · ");
         const ap = (fields[2] || "").match(/\d{1,2}:\d{2}/); ofAp = ap ? parseT(ap[0]) : null;
         if (applyDay(s.d, times, oc, true)) { const r = month.dias[s.d]; if (r) { if (info) r.info = info; else delete r.info; if (ofAp != null) r.ofAp = ofAp; else delete r.ofAp; } n++; }
         return;
